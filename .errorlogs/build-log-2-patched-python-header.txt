@@ -1,0 +1,346 @@
++ docker build . --tag the-ultimate-videogame:build
+Sending build context to Docker daemon  182.4MB
+Step 1/39 : FROM python:3.11-bullseye
+ ---> 63490c269128
+Step 2/39 : ENV DEBIAN_FRONTEND=noninteractive
+ ---> Using cache
+ ---> f5e699383eea
+Step 3/39 : RUN apt-get update &&  apt-get install -y locales
+ ---> Using cache
+ ---> f58764221df5
+Step 4/39 : RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen &&     dpkg-reconfigure --frontend=noninteractive locales &&     update-locale LANG=en_US.UTF-8
+ ---> Using cache
+ ---> 8ed53e42117e
+Step 5/39 : ENV LANG en_US.UTF-8
+ ---> Using cache
+ ---> 56ca9a882452
+Step 6/39 : RUN apt-get install -y pkg-config build-essential cmake curl wget vim emscripten debhelper  cmake   libgl-dev libopenal-dev libglfw3-dev libsdl2-dev libegl1-mesa-dev libegl1 libegl-dev
+ ---> Using cache
+ ---> 25fd42f95adf
+Step 7/39 : RUN mkdir /app
+ ---> Using cache
+ ---> 0c215db9fe96
+Step 8/39 : COPY lib /app/lib
+ ---> Using cache
+ ---> 577320055a46
+Step 9/39 : WORKDIR /app
+ ---> Using cache
+ ---> 4577c51e62ae
+Step 10/39 : RUN git clone --depth 1 --branch 3.11 https://github.com/python/cpython.git lib/python-wasm/cpython
+ ---> Using cache
+ ---> 12c58a8b087f
+Step 11/39 : RUN mkdir -p lib/python-wasm/cpython/builddir/build
+ ---> Using cache
+ ---> 642f9c1506c4
+Step 12/39 : RUN mkdir -p lib/python-wasm/cpython/builddir/emscripten-browser
+ ---> Using cache
+ ---> 95743862b8dd
+Step 13/39 : RUN mkdir -p lib/python-wasm/cpython/builddir/emscripten-node
+ ---> Using cache
+ ---> dc4d9f9d1a52
+Step 14/39 : RUN cd ./lib/python-wasm/ && ./build-python-build.sh
+ ---> Using cache
+ ---> 935d678f94f6
+Step 15/39 : RUN cd ./lib/python-wasm/ && ./build-python-emscripten-browser.sh
+ ---> Using cache
+ ---> e90d2a30415d
+Step 16/39 : RUN cp -r lib/python-wasm/cpython/builddir/emscripten-browser $VIDEOGAME_INSTALL_LOCATION/python-wasm
+ ---> Using cache
+ ---> 46a0bcee8a84
+Step 17/39 : ENV VIDEOGAME_INSTALL_LOCATION=/app/install_normal
+ ---> Using cache
+ ---> afdcf023df0a
+Step 18/39 : ENV VIDEOGAME_EMSCRIPTEN_TOOLCHAIN=
+ ---> Using cache
+ ---> e582bca53897
+Step 19/39 : ADD ./_build_corrade.sh .
+ ---> Using cache
+ ---> 37aa27ff925b
+Step 20/39 : RUN ./_build_corrade.sh
+ ---> Using cache
+ ---> 2db0147b8b3a
+Step 21/39 : ADD ./_build_magnum.sh .
+ ---> Using cache
+ ---> c0c5a3bd2527
+Step 22/39 : RUN ./_build_magnum.sh
+ ---> Using cache
+ ---> 05f774a34688
+Step 23/39 : ADD ./_build_magnum_plugins.sh .
+ ---> Using cache
+ ---> b0ce7de6a81a
+Step 24/39 : RUN ./_build_magnum_plugins.sh
+ ---> Using cache
+ ---> 51910ccf2a53
+Step 25/39 : ADD ./_build_pybind11.sh .
+ ---> Using cache
+ ---> 378b310f062b
+Step 26/39 : RUN ./_build_pybind11.sh
+ ---> Using cache
+ ---> 923ab90c7900
+Step 27/39 : ADD ./_build_magnum_bindings.sh .
+ ---> Using cache
+ ---> ce8be5989056
+Step 28/39 : RUN ./_build_magnum_bindings.sh
+ ---> Using cache
+ ---> 6fabf73fc7e9
+Step 29/39 : ENV VIDEOGAME_INSTALL_LOCATION=/app/install_emscripten
+ ---> Using cache
+ ---> f3a23bed4d72
+Step 30/39 : ENV VIDEOGAME_EMSCRIPTEN_TOOLCHAIN=/app/lib/toolchains/generic/Emscripten-wasm.cmake
+ ---> Using cache
+ ---> a695b1350634
+Step 31/39 : ADD ./_build_corrade.sh .
+ ---> Using cache
+ ---> ee09978aebaa
+Step 32/39 : RUN ./_build_corrade.sh
+ ---> Using cache
+ ---> f5f4e2d781aa
+Step 33/39 : ADD ./_build_magnum.sh .
+ ---> Using cache
+ ---> 91a4a224e631
+Step 34/39 : RUN ./_build_magnum.sh
+ ---> Using cache
+ ---> 96ec6fc469f4
+Step 35/39 : ADD ./_build_pybind11.sh .
+ ---> Using cache
+ ---> e0ca0148f14d
+Step 36/39 : RUN ./_build_pybind11.sh
+ ---> Using cache
+ ---> b0136abcfa8f
+Step 37/39 : ADD ./_build_magnum_bindings.sh .
+ ---> Using cache
+ ---> ee9a95bcbf69
+Step 38/39 : RUN ./_build_magnum_bindings.sh || true
+ ---> Running in 38ce50de7abb
+[91m++ dirname ./_build_magnum_bindings.sh
+[0m[91m+ cd .
++ cd lib/magnum-bindings
+[0m[91m+ rm -rf build
+[0m[91m+ mkdir build
+[0m[91m+ cd build
++ sed -i.bak 's|^#error "LONG_BIT|// #error "LONG_BIT|g' /usr/local/include/python3.11/pyport.h
+[0m[91m+ cmake .. -DCMAKE_TOOLCHAIN_FILE=/app/lib/toolchains/generic/Emscripten-wasm.cmake -DMAGNUM_WITH_PYTHON=ON -DMAGNUM_BUILD_STATIC=ON -DCMAKE_CROSSCOMPILING=ON '-DCMAKE_PREFIX_PATH=/app/install_emscripten;/usr/local;/usr' -DCMAKE_FIND_ROOT_PATH=/app/install_emscripten -DCMAKE_INSTALL_PREFIX=/app/install_emscripten
+[0m-- The CXX compiler identification is Clang 11.0.1
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/em++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found Corrade: /app/install_emscripten/include  found components: Containers rc Utility 
+-- Found Magnum: /app/install_emscripten/include   
+-- The LIB_SUFFIX variable is not defined. It will be autodetected now.
+-- You can set it manually with -DLIB_SUFFIX=<value> (64 for example).
+-- LIB_SUFFIX autodetected as '', libraries will be installed into /app/install_emscripten/lib
+-- Found Git: /usr/bin/git (found version "2.30.2") 
+[91mCMake Warning at src/Magnum/CMakeLists.txt:64 (message):
+  Can't match Git version: fatal: not a git repository:
+  /app/lib/magnum-bindings/../../.git/modules/magnum-bindings
+
+
+
+[0m-- Found OpenGLES2: GL  
+-- Found Magnum: /app/install_emscripten/include  found components: GL SceneGraph 
+-- Found PythonInterp: /usr/local/bin/python3 (found suitable version "3.11.1", minimum required is "3.6") 
+-- Found PythonLibs: python3.11
+-- Performing Test HAS_FLTO
+-- Performing Test HAS_FLTO - Success
+-- Performing Test HAS_FLTO_THIN
+-- Performing Test HAS_FLTO_THIN - Success
+-- Found pybind11: /app/install_emscripten/include (found version "2.11.0dev1")
+-- Found Corrade: /app/install_emscripten/include  found components: Containers rc Utility PluginManager 
+-- Could NOT find SDL2 (missing: SDL2_INCLUDE_DIR) 
+-- Could NOT find EGL (missing: EGL_INCLUDE_DIR) 
+-- Could NOT find Magnum (missing: GlfwApplication Sdl2Application) 
+    Reason given by package: GlfwApplication is not a known component on this platform. Sdl2Application is not built by default. Make sure you enabled MAGNUM_WITH_SDL2APPLICATION when building Magnum.
+
+-- Found Corrade: /app/install_emscripten/include  found components: Containers rc Utility 
+-- Could NOT find EGL (missing: EGL_INCLUDE_DIR) 
+-- Could NOT find Magnum (missing: WindowlessEglApplication) 
+    Reason given by package: WindowlessEglApplication is not built by default. Make sure you enabled MAGNUM_WITH_WINDOWLESSEGLAPPLICATION when building Magnum.
+
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /app/lib/magnum-bindings/build
+[91m+ make -j8
+[0mScanning dependencies of target corrade
+[  9%] Building CXX object src/python/corrade/CMakeFiles/corrade.dir/containers.cpp.o
+[  9%] Building CXX object src/python/corrade/CMakeFiles/corrade.dir/pluginmanager.cpp.o
+[ 14%] Building CXX object src/python/corrade/CMakeFiles/corrade.dir/corrade.cpp.o
+Scanning dependencies of target magnum
+[ 23%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/math.matrixfloat.cpp.o
+[ 23%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/magnum.cpp.o
+[ 28%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/math.range.cpp.o
+[ 33%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/math.cpp.o
+[ 38%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/math.matrixdouble.cpp.o
+[91m/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:45:66: error: no member named 'WrongPluginVersion' in 'Corrade::PluginManager::LoadState'
+        .value("WRONG_PLUGIN_VERSION", PluginManager::LoadState::WrongPluginVersion)
+                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:46:69: error: no member named 'WrongInterfaceVersion' in 'Corrade::PluginManager::LoadState'
+        .value("WRONG_INTERFACE_VERSION", PluginManager::LoadState::WrongInterfaceVersion)
+                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:47:65: error: no member named 'WrongMetadataFile' in 'Corrade::PluginManager::LoadState'
+        .value("WRONG_METADATA_FILE", PluginManager::LoadState::WrongMetadataFile)
+                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:48:67: error: no member named 'UnresolvedDependency' in 'Corrade::PluginManager::LoadState'
+        .value("UNRESOLVED_DEPENDENCY", PluginManager::LoadState::UnresolvedDependency)
+                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:51:56: error: no member named 'NotLoaded' in 'Corrade::PluginManager::LoadState'
+        .value("NOT_LOADED", PluginManager::LoadState::NotLoaded)
+                             ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:52:59: error: no member named 'UnloadFailed' in 'Corrade::PluginManager::LoadState'
+        .value("UNLOAD_FAILED", PluginManager::LoadState::UnloadFailed)
+                                ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:53:54: error: no member named 'Required' in 'Corrade::PluginManager::LoadState'
+        .value("REQUIRED", PluginManager::LoadState::Required)
+                           ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:54:50: error: no member named 'Used' in 'Corrade::PluginManager::LoadState'
+        .value("USED", PluginManager::LoadState::Used);
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+[0m[91m/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:67:41: error: no member named 'pluginDirectory' in 'Corrade::PluginManager::AbstractManager'
+                return std::string{self.pluginDirectory()};
+                                   ~~~~ ^
+[0m[91m/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:69:22: error: no member named 'setPluginDirectory' in 'Corrade::PluginManager::AbstractManager'
+                self.setPluginDirectory(directory);
+                ~~~~ ^
+[0m[91m/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:107:51: error: no member named 'NotLoaded' in 'Corrade::PluginManager::LoadState'; did you mean 'Loaded'?
+            if(state != PluginManager::LoadState::NotLoaded && state != PluginManager::LoadState::Static) {
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+                                                  Loaded
+/app/install_emscripten/include/Corrade/PluginManager/AbstractManager.h:136:5: note: 'Loaded' declared here
+    Loaded = LoadState::Static,
+    ^
+[0m[91m/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:71:74: error: no member named 'reloadPluginDirectory' in 'Corrade::PluginManager::AbstractManager'
+        .def("reload_plugin_directory", &PluginManager::AbstractManager::reloadPluginDirectory, "Reload plugin directory")
+                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:62:32: error: variable 'self' cannot be implicitly captured in a lambda with no capture-default specified
+            return std::string{self.pluginInterface()};
+                               ^
+/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:87: note: 'self' declared here
+[0m[91m        .def_property_readonly("plugin_interface", [](PluginManager::AbstractManager& self) {
+                                                                                      ^
+/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:52: note: lambda expression begins here
+        .def_property_readonly("plugin_interface", [](PluginManager::AbstractManager& self) {
+                                                   ^
+[0m[91m/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:87: warning: unused parameter 'self' [-Wunused-parameter]
+        .def_property_readonly("plugin_interface", [](PluginManager::AbstractManager& self) {
+                                                                                      ^
+[0m[91m/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:52: error: no viable conversion from '(lambda at /app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:52)' to 'const (lambda at /app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:52)'
+        .def_property_readonly("plugin_interface", [](PluginManager::AbstractManager& self) {
+                                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:52: note: candidate constructor (the implicit copy constructor) not viable: no known conversion from '(lambda at /app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:52)' to 'const (lambda at /app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:52) &' for 1st argument
+        .def_property_readonly("plugin_interface", [](PluginManager::AbstractManager& self) {
+                                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:52: note: candidate constructor (the implicit move constructor) not viable: no known conversion from '(lambda at /app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:52)' to '(lambda at /app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:52) &&' for 1st argument
+        .def_property_readonly("plugin_interface", [](PluginManager::AbstractManager& self) {
+                                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[0m[91m/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:52: note: candidate function
+/app/install_emscripten/include/pybind11/pybind11.h:1698:67: note: passing argument to parameter 'fget' here
+[0m[91m    class_ &def_property_readonly(const char *name, const Getter &fget, const Extra &...extra) {
+                                                                  ^
+[0m[ 42%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/math.vectorfloat.cpp.o
+[91m1 warning and 14 errors generated.
+[0m[91mem++: error: '/usr/bin/clang++ -DEMSCRIPTEN -fignore-exceptions -flto=full -Xclang -isystem/usr/share/emscripten/system/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=12 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -Werror=implicit-function-declaration --sysroot=/usr/share/emscripten/system -Xclang -isystem/usr/share/emscripten/cache/include -Xclang -iwithsysroot/include/libcxx -Xclang -iwithsysroot/lib/libcxxabi/include -Xclang -iwithsysroot/include/compat -Xclang -iwithsysroot/include/libc -Xclang -iwithsysroot/lib/libc/musl/arch/emscripten -Xclang -iwithsysroot/local/include -Xclang -iwithsysroot/include/SSE -Xclang -iwithsysroot/include/neon -Xclang -iwithsysroot/lib/compiler-rt/include -Xclang -iwithsysroot/lib/libunwind/include -Dcorrade_EXPORTS -I/app/lib/magnum-bindings/src -I/app/lib/magnum-bindings/src/python -I/app/lib/magnum-bindings/build/src/python -isystem /app/install_emscripten/include -isystem /usr/local/include/python3.11 -fPIC -fvisibility=hidden -Wall -Wextra -Wold-style-cast -Winit-self -Werror=return-type -Wmissing-declarations -Wpedantic -fvisibility=hidden -fvisibility-inlines-hidden -Wmissing-prototypes -Wno-shorten-64-to-32 -flto -c /app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp -o CMakeFiles/corrade.dir/pluginmanager.cpp.o' failed (1)
+[0m[91mmake[2]: *** [src/python/corrade/CMakeFiles/corrade.dir/build.make:108: src/python/corrade/CMakeFiles/corrade.dir/pluginmanager.cpp.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+[0m[ 47%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/math.vectorintegral.cpp.o
+[ 52%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/gl.cpp.o
+[ 57%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/meshtools.cpp.o
+[91mmake[1]: *** [CMakeFiles/Makefile2:447: src/python/corrade/CMakeFiles/corrade.dir/all] Error 2
+make[1]: *** Waiting for unfinished jobs....
+[0m[ 61%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/primitives.cpp.o
+[91m/app/lib/magnum-bindings/src/python/magnum/gl.cpp:310:32: error: no member named 'Flag' in 'Magnum::GL::Context'
+        py::enum_<GL::Context::Flag> contextFlag{context, "Flag", "Context flag"};
+                  ~~~~~~~~~~~~~^
+[0m[91m/app/lib/magnum-bindings/src/python/magnum/gl.cpp:312:42: error: no member named 'Flag' in 'Magnum::GL::Context'
+            .value("DEBUG", GL::Context::Flag::Debug)
+                            ~~~~~~~~~~~~~^
+[0m[91m/app/lib/magnum-bindings/src/python/magnum/gl.cpp:316:45: error: no member named 'Flag' in 'Magnum::GL::Context'
+            .value("NO_ERROR", GL::Context::Flag::NoError)
+                               ~~~~~~~~~~~~~^
+[0m[91m/app/lib/magnum-bindings/src/python/magnum/gl.cpp:320:28: error: no member named 'Flag' in 'Magnum::GL::Context'; did you mean 'log'?
+            .value("NONE", GL::Context::Flag{});
+                           ^~~~~~~~~~~~~~~~~
+                           log
+/usr/share/emscripten/system/include/libcxx/math.h:1007:1: note: 'log' declared here
+log(_A1 __lcpp_x) _NOEXCEPT {return ::log((double)__lcpp_x);}
+^
+[0m[91m/app/lib/magnum-bindings/src/python/magnum/gl.cpp:837:60: error: no member named 'setStorageMultisample' in 'Magnum::GL::Renderbuffer'
+        .def("set_storage_multisample", &GL::Renderbuffer::setStorageMultisample, "Set multisample renderbuffer storage");
+                                         ~~~~~~~~~~~~~~~~~~^
+[0m[91m/app/lib/magnum-bindings/src/python/magnum/gl.cpp:847:19: error: no member named 'FramebufferBlit' in namespace 'Magnum::GL'
+    py::enum_<GL::FramebufferBlit> framebufferBlit{m, "FramebufferBlit", "Mask for framebuffer blitting"};
+              ~~~~^
+[0m[91m/app/lib/magnum-bindings/src/python/magnum/gl.cpp:849:29: error: no member named 'FramebufferBlit' in namespace 'Magnum::GL'
+        .value("COLOR", GL::FramebufferBlit::Color)
+                        ~~~~^
+[0m[91m/app/lib/magnum-bindings/src/python/magnum/gl.cpp:850:29: error: no member named 'FramebufferBlit' in namespace 'Magnum::GL'
+        .value("DEPTH", GL::FramebufferBlit::Depth)
+                        ~~~~^
+[0m[91m/app/lib/magnum-bindings/src/python/magnum/gl.cpp:851:31: error: no member named 'FramebufferBlit' in namespace 'Magnum::GL'
+        .value("STENCIL", GL::FramebufferBlit::Stencil);
+                          ~~~~^
+[0m[91m/app/lib/magnum-bindings/src/python/magnum/gl.cpp:854:19: error: no member named 'FramebufferBlitFilter' in namespace 'Magnum::GL'
+    py::enum_<GL::FramebufferBlitFilter>{m, "FramebufferBlitFilter", "Framebuffer blit filtering"}
+              ~~~~^
+[0m[91m/app/lib/magnum-bindings/src/python/magnum/gl.cpp:855:31: error: no member named 'FramebufferBlitFilter' in namespace 'Magnum::GL'
+        .value("NEAREST", GL::FramebufferBlitFilter::Nearest)
+                          ~~~~^
+[0m[91m/app/lib/magnum-bindings/src/python/magnum/gl.cpp:856:30: error: no member named 'FramebufferBlitFilter' in namespace 'Magnum::GL'
+        .value("LINEAR", GL::FramebufferBlitFilter::Linear);
+                         ~~~~^
+[0m[91m/app/lib/magnum-bindings/src/python/magnum/gl.cpp:865:178: error: no type named 'FramebufferBlit' in namespace 'Magnum::GL'
+        .def_static("blit", [](GL::AbstractFramebuffer& source, GL::AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, GL::FramebufferBlit mask, GL::FramebufferBlitFilter filter) {
+                                                                                                                                                                             ~~~~^
+[0m[91m/app/lib/magnum-bindings/src/python/magnum/gl.cpp:865:204: error: no type named 'FramebufferBlitFilter' in namespace 'Magnum::GL'
+        .def_static("blit", [](GL::AbstractFramebuffer& source, GL::AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, GL::FramebufferBlit mask, GL::FramebufferBlitFilter filter) {
+                                                                                                                                                                                                       ~~~~^
+[0m[91m/app/lib/magnum-bindings/src/python/magnum/gl.cpp:866:13: error: no member named 'blit' in 'Magnum::GL::AbstractFramebuffer'; did you mean 'exit'?
+            GL::AbstractFramebuffer::blit(source, destination, sourceRectangle, destinationRectangle, mask, filter);
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            exit
+/usr/share/emscripten/system/include/libc/stdlib.h:46:16: note: 'exit' declared here
+_Noreturn void exit (int);
+               ^
+/app/lib/magnum-bindings/src/python/magnum/gl.cpp:865:194: warning: unused parameter 'mask' [-Wunused-parameter]
+[0m[91m        .def_static("blit", [](GL::AbstractFramebuffer& source, GL::AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, GL::FramebufferBlit mask, GL::FramebufferBlitFilter filter) {
+                                                                                                                                                                                                 ^
+/app/lib/magnum-bindings/src/python/magnum/gl.cpp:865:226: warning: unused parameter 'filter' [-Wunused-parameter]
+        .def_static("blit", [](GL::AbstractFramebuffer& source, GL::AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, GL::FramebufferBlit mask, GL::FramebufferBlitFilter filter) {
+                                                                                                                                                                                                                                 ^
+[0m[91m/app/lib/magnum-bindings/src/python/magnum/gl.cpp:868:134: error: no type named 'FramebufferBlit' in namespace 'Magnum::GL'
+        .def_static("blit", [](GL::AbstractFramebuffer& source, GL::AbstractFramebuffer& destination, const Range2Di& rectangle, GL::FramebufferBlit mask) {
+                                                                                                                                 ~~~~^
+[0m[91m/app/lib/magnum-bindings/src/python/magnum/gl.cpp:869:13: error: no member named 'blit' in 'Magnum::GL::AbstractFramebuffer'; did you mean 'exit'?
+            GL::AbstractFramebuffer::blit(source, destination, rectangle, mask);
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            exit
+/usr/share/emscripten/system/include/libc/stdlib.h:46:16: note: 'exit' declared here
+_Noreturn void exit (int);
+               ^
+/app/lib/magnum-bindings/src/python/magnum/gl.cpp:868:150: warning: unused parameter 'mask' [-Wunused-parameter]
+[0m[91m        .def_static("blit", [](GL::AbstractFramebuffer& source, GL::AbstractFramebuffer& destination, const Range2Di& rectangle, GL::FramebufferBlit mask) {
+                                                                                                                                                     ^
+[0m[91m/app/lib/magnum-bindings/src/python/magnum/gl.cpp:1352:18: error: no member named 'mapForRead' in 'Magnum::GL::Framebuffer'; did you mean 'mapForDraw'?
+            self.mapForRead(attachment);
+                 ^~~~~~~~~~
+                 mapForDraw
+/app/install_emscripten/include/Magnum/GL/Framebuffer.h:573:22: note: 'mapForDraw' declared here
+        Framebuffer& mapForDraw(DrawAttachment attachment);
+                     ^
+[0m[ 66%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/scenegraph.cpp.o
+[ 71%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/scenegraph.matrix.cpp.o
+[ 76%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/scenegraph.trs.cpp.o
+[91m3 warnings and 18 errors generated.
+[0m[91mem++: error: '/usr/bin/clang++ -DEMSCRIPTEN -fignore-exceptions -flto=full -Xclang -isystem/usr/share/emscripten/system/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=12 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -Werror=implicit-function-declaration --sysroot=/usr/share/emscripten/system -Xclang -isystem/usr/share/emscripten/cache/include -Xclang -iwithsysroot/include/libcxx -Xclang -iwithsysroot/lib/libcxxabi/include -Xclang -iwithsysroot/include/compat -Xclang -iwithsysroot/include/libc -Xclang -iwithsysroot/lib/libc/musl/arch/emscripten -Xclang -iwithsysroot/local/include -Xclang -iwithsysroot/include/SSE -Xclang -iwithsysroot/include/neon -Xclang -iwithsysroot/lib/compiler-rt/include -Xclang -iwithsysroot/lib/libunwind/include -Dmagnum_EXPORTS -I/app/lib/magnum-bindings/src -I/app/lib/magnum-bindings/src/python -I/app/lib/magnum-bindings/build/src/python -isystem /app/install_emscripten/include -isystem /usr/local/include/python3.11 -fPIC -fvisibility=hidden -Wall -Wextra -Wold-style-cast -Winit-self -Werror=return-type -Wmissing-declarations -Wpedantic -fvisibility=hidden -fvisibility-inlines-hidden -Wmissing-prototypes -Wno-shorten-64-to-32 -flto -c /app/lib/magnum-bindings/src/python/magnum/gl.cpp -o CMakeFiles/magnum.dir/gl.cpp.o' failed (1)
+[0m[91mmake[2]: *** [src/python/magnum/CMakeFiles/magnum.dir/build.make:173: src/python/magnum/CMakeFiles/magnum.dir/gl.cpp.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+[0m[91mmake[1]: *** [CMakeFiles/Makefile2:474: src/python/magnum/CMakeFiles/magnum.dir/all] Error 2
+[0m[91mmake: *** [Makefile:149: all] Error 2
+[0mRemoving intermediate container 38ce50de7abb
+ ---> 84234cb33b7a
+Step 39/39 : ENV PS2="videogame$ "
+ ---> Running in 935838afaafb
+Removing intermediate container 935838afaafb
+ ---> 121a8b3722f9
+Successfully built 121a8b3722f9
+Successfully tagged the-ultimate-videogame:build

@@ -10,3 +10,13 @@
 [submodule "lib/corrade"]
 	path = lib/corrade
 	url = https://github.com/mosra/corrade
+[submodule "lib/pybind11"]
+	path = lib/pybind11
+	url = https://github.com/pybind/pybind11
+[submodule "lib/python-wasm"]
+	path = lib/python-wasm
+	url = https://github.com/ethanhs/python-wasm
+	branch = main
+[submodule "lib/magnum-plugins"]
+	path = lib/magnum-plugins
+	url = https://github.com/mosra/magnum-plugins

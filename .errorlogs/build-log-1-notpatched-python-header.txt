@@ -1,0 +1,1646 @@
++ docker build . --tag the-ultimate-videogame:build
+Sending build context to Docker daemon  182.5MB
+Step 1/39 : FROM python:3.11-bullseye
+ ---> 63490c269128
+Step 2/39 : ENV DEBIAN_FRONTEND=noninteractive
+ ---> Using cache
+ ---> f5e699383eea
+Step 3/39 : RUN apt-get update &&  apt-get install -y locales
+ ---> Using cache
+ ---> f58764221df5
+Step 4/39 : RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen &&     dpkg-reconfigure --frontend=noninteractive locales &&     update-locale LANG=en_US.UTF-8
+ ---> Using cache
+ ---> 8ed53e42117e
+Step 5/39 : ENV LANG en_US.UTF-8
+ ---> Using cache
+ ---> 56ca9a882452
+Step 6/39 : RUN apt-get install -y pkg-config build-essential cmake curl wget vim emscripten debhelper  cmake   libgl-dev libopenal-dev libglfw3-dev libsdl2-dev libegl1-mesa-dev libegl1 libegl-dev
+ ---> Using cache
+ ---> 25fd42f95adf
+Step 7/39 : RUN mkdir /app
+ ---> Using cache
+ ---> 0c215db9fe96
+Step 8/39 : COPY lib /app/lib
+ ---> Using cache
+ ---> 577320055a46
+Step 9/39 : WORKDIR /app
+ ---> Using cache
+ ---> 4577c51e62ae
+Step 10/39 : RUN git clone --depth 1 --branch 3.11 https://github.com/python/cpython.git lib/python-wasm/cpython
+ ---> Using cache
+ ---> 12c58a8b087f
+Step 11/39 : RUN mkdir -p lib/python-wasm/cpython/builddir/build
+ ---> Using cache
+ ---> 642f9c1506c4
+Step 12/39 : RUN mkdir -p lib/python-wasm/cpython/builddir/emscripten-browser
+ ---> Using cache
+ ---> 95743862b8dd
+Step 13/39 : RUN mkdir -p lib/python-wasm/cpython/builddir/emscripten-node
+ ---> Using cache
+ ---> dc4d9f9d1a52
+Step 14/39 : RUN cd ./lib/python-wasm/ && ./build-python-build.sh
+ ---> Using cache
+ ---> 935d678f94f6
+Step 15/39 : RUN cd ./lib/python-wasm/ && ./build-python-emscripten-browser.sh
+ ---> Using cache
+ ---> e90d2a30415d
+Step 16/39 : RUN cp -r lib/python-wasm/cpython/builddir/emscripten-browser $VIDEOGAME_INSTALL_LOCATION/python-wasm
+ ---> Using cache
+ ---> 46a0bcee8a84
+Step 17/39 : ENV VIDEOGAME_INSTALL_LOCATION=/app/install_normal
+ ---> Using cache
+ ---> afdcf023df0a
+Step 18/39 : ENV VIDEOGAME_EMSCRIPTEN_TOOLCHAIN=
+ ---> Using cache
+ ---> e582bca53897
+Step 19/39 : ADD ./_build_corrade.sh .
+ ---> Using cache
+ ---> 37aa27ff925b
+Step 20/39 : RUN ./_build_corrade.sh
+ ---> Using cache
+ ---> 2db0147b8b3a
+Step 21/39 : ADD ./_build_magnum.sh .
+ ---> Using cache
+ ---> c0c5a3bd2527
+Step 22/39 : RUN ./_build_magnum.sh
+ ---> Using cache
+ ---> 05f774a34688
+Step 23/39 : ADD ./_build_magnum_plugins.sh .
+ ---> Using cache
+ ---> b0ce7de6a81a
+Step 24/39 : RUN ./_build_magnum_plugins.sh
+ ---> Using cache
+ ---> 51910ccf2a53
+Step 25/39 : ADD ./_build_pybind11.sh .
+ ---> Using cache
+ ---> 378b310f062b
+Step 26/39 : RUN ./_build_pybind11.sh
+ ---> Using cache
+ ---> 923ab90c7900
+Step 27/39 : ADD ./_build_magnum_bindings.sh .
+ ---> e41ce5d2cc95
+Step 28/39 : RUN ./_build_magnum_bindings.sh
+ ---> Running in 1b4dbb913912
+[91m++ dirname ./_build_magnum_bindings.sh
+[0m[91m+ cd .
+[0m[91m+ cd lib/magnum-bindings
+[0m[91m+ rm -rf build
+[0m[91m+ mkdir build
+[0m[91m+ cd build
+[0m[91m+ cmake .. -DCMAKE_TOOLCHAIN_FILE= -DMAGNUM_WITH_PYTHON=ON -DMAGNUM_BUILD_STATIC=ON -DCMAKE_CROSSCOMPILING=ON '-DCMAKE_PREFIX_PATH=/app/install_normal;/usr/local;/usr' -DCMAKE_FIND_ROOT_PATH=/app/install_normal -DCMAKE_INSTALL_PREFIX=/app/install_normal
+[0m-- The CXX compiler identification is GNU 10.2.1
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found Corrade: /app/install_normal/include  found components: Containers rc Utility 
+-- Found Magnum: /app/install_normal/include   
+-- The LIB_SUFFIX variable is not defined. It will be autodetected now.
+-- You can set it manually with -DLIB_SUFFIX=<value> (64 for example).
+-- LIB_SUFFIX autodetected as '', libraries will be installed into /app/install_normal/lib
+-- Found Git: /usr/bin/git (found version "2.30.2") 
+[91mCMake Warning at src/Magnum/CMakeLists.txt:64 (message):
+  Can't match Git version: fatal: not a git repository:
+  /app/lib/magnum-bindings/../../.git/modules/magnum-bindings
+
+
+
+[0m-- Found OpenGL: /usr/lib/x86_64-linux-gnu/libOpenGL.so   
+-- Found Magnum: /app/install_normal/include  found components: GL SceneGraph 
+-- Found PythonInterp: /usr/local/bin/python3 (found suitable version "3.11.1", minimum required is "3.6") 
+-- Found PythonLibs: /usr/local/lib/libpython3.11.so
+-- Performing Test HAS_FLTO
+-- Performing Test HAS_FLTO - Success
+-- Found pybind11: /app/install_normal/include (found version "2.11.0dev1")
+-- Found Corrade: /app/install_normal/include  found components: Containers rc Utility PluginManager 
+-- Found GLFW: /usr/include  
+-- Found SDL2: /usr/lib/x86_64-linux-gnu/libSDL2-2.0.so  
+-- Could NOT find Magnum (missing: GlfwApplication Sdl2Application) 
+    Reason given by package: GlfwApplication is not built by default. Make sure you enabled MAGNUM_WITH_GLFWAPPLICATION when building Magnum. Sdl2Application is not built by default. Make sure you enabled MAGNUM_WITH_SDL2APPLICATION when building Magnum.
+
+-- Found Corrade: /app/install_normal/include  found components: Containers rc Utility 
+-- Found EGL: /usr/lib/x86_64-linux-gnu/libEGL.so  
+-- Could NOT find Magnum (missing: WindowlessEglApplication) 
+    Reason given by package: WindowlessEglApplication is not built by default. Make sure you enabled MAGNUM_WITH_WINDOWLESSEGLAPPLICATION when building Magnum.
+
+-- Found X11: /usr/include   
+-- Looking for XOpenDisplay in /usr/lib/x86_64-linux-gnu/libX11.so;/usr/lib/x86_64-linux-gnu/libXext.so
+-- Looking for XOpenDisplay in /usr/lib/x86_64-linux-gnu/libX11.so;/usr/lib/x86_64-linux-gnu/libXext.so - found
+-- Looking for gethostbyname
+-- Looking for gethostbyname - found
+-- Looking for connect
+-- Looking for connect - found
+-- Looking for remove
+-- Looking for remove - found
+-- Looking for shmat
+-- Looking for shmat - found
+-- Looking for IceConnectionNumber in ICE
+-- Looking for IceConnectionNumber in ICE - found
+-- Could NOT find Magnum (missing: WindowlessGlxApplication) 
+    Reason given by package: WindowlessGlxApplication is not built by default. Make sure you enabled MAGNUM_WITH_WINDOWLESSGLXAPPLICATION when building Magnum.
+
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /app/lib/magnum-bindings/build
+[91m+ make -j8
+[0mScanning dependencies of target corrade
+[  4%] Building CXX object src/python/corrade/CMakeFiles/corrade.dir/corrade.cpp.o
+[ 14%] Building CXX object src/python/corrade/CMakeFiles/corrade.dir/containers.cpp.o
+[ 14%] Building CXX object src/python/corrade/CMakeFiles/corrade.dir/pluginmanager.cpp.o
+Scanning dependencies of target magnum
+[ 28%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/math.matrixfloat.cpp.o
+[ 28%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/math.cpp.o
+[ 28%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/magnum.cpp.o
+[ 33%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/math.range.cpp.o
+[ 38%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/math.matrixdouble.cpp.o
+[ 42%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/math.vectorfloat.cpp.o
+[ 47%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/math.vectorintegral.cpp.o
+[ 52%] Linking CXX shared module ../_corrade.cpython-311-x86_64-linux-gnu.so
+[ 57%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/gl.cpp.o
+[ 61%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/meshtools.cpp.o
+[ 66%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/primitives.cpp.o
+[ 71%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/scenegraph.cpp.o
+[ 76%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/scenegraph.matrix.cpp.o
+[ 76%] Built target corrade
+[ 80%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/scenegraph.trs.cpp.o
+[ 85%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/shaders.cpp.o
+[ 90%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/text.cpp.o
+[ 95%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/trade.cpp.o
+[100%] Linking CXX shared module ../_magnum.cpython-311-x86_64-linux-gnu.so
+[100%] Built target magnum
+[91m+ make install
+[0m[ 19%] Built target corrade
+[100%] Built target magnum
+Install the project...
+-- Install configuration: ""
+-- Installing: /app/install_normal/share/cmake/MagnumBindings/FindMagnumBindings.cmake
+-- Installing: /app/install_normal/share/cmake/MagnumBindings/MagnumBindingsConfig.cmake
+-- Installing: /app/install_normal/include/Corrade/PythonBindings.h
+-- Installing: /app/install_normal/include/Corrade/Containers/OptionalPythonBindings.h
+-- Installing: /app/install_normal/include/Corrade/Containers/PythonBindings.h
+-- Installing: /app/install_normal/include/Corrade/Containers/StridedArrayViewPythonBindings.h
+-- Installing: /app/install_normal/include/Magnum/versionBindings.h
+-- Installing: /app/install_normal/include/Magnum/PythonBindings.h
+-- Installing: /app/install_normal/include/Magnum/GL/PythonBindings.h
+-- Installing: /app/install_normal/include/Magnum/SceneGraph/PythonBindings.h
+[91m+ cd src/python
++ python setup.py install
+[0mrunning install
+[91m/usr/local/lib/python3.11/site-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+  warnings.warn(
+[0m[91m/usr/local/lib/python3.11/site-packages/setuptools/command/easy_install.py:144: EasyInstallDeprecationWarning: easy_install command is deprecated. Use build and pip and other standards-based tools.
+  warnings.warn(
+[0mrunning bdist_egg
+running egg_info
+creating magnum.egg-info
+writing magnum.egg-info/PKG-INFO
+writing dependency_links to magnum.egg-info/dependency_links.txt
+writing top-level names to magnum.egg-info/top_level.txt
+writing manifest file 'magnum.egg-info/SOURCES.txt'
+reading manifest file 'magnum.egg-info/SOURCES.txt'
+writing manifest file 'magnum.egg-info/SOURCES.txt'
+installing library code to build/bdist.linux-x86_64/egg
+running install_lib
+running build_py
+creating build
+creating build/lib.linux-x86_64-cpython-311
+creating build/lib.linux-x86_64-cpython-311/corrade
+copying /app/lib/magnum-bindings/build/src/python/corrade/__init__.py -> build/lib.linux-x86_64-cpython-311/corrade
+creating build/lib.linux-x86_64-cpython-311/magnum
+copying /app/lib/magnum-bindings/build/src/python/magnum/__init__.py -> build/lib.linux-x86_64-cpython-311/magnum
+creating build/lib.linux-x86_64-cpython-311/magnum/platform
+copying /app/lib/magnum-bindings/build/src/python/magnum/platform/__init__.py -> build/lib.linux-x86_64-cpython-311/magnum/platform
+running build_ext
+creating build/bdist.linux-x86_64
+creating build/bdist.linux-x86_64/egg
+creating build/bdist.linux-x86_64/egg/magnum
+copying build/lib.linux-x86_64-cpython-311/magnum/__init__.py -> build/bdist.linux-x86_64/egg/magnum
+creating build/bdist.linux-x86_64/egg/magnum/platform
+copying build/lib.linux-x86_64-cpython-311/magnum/platform/__init__.py -> build/bdist.linux-x86_64/egg/magnum/platform
+creating build/bdist.linux-x86_64/egg/corrade
+copying build/lib.linux-x86_64-cpython-311/corrade/__init__.py -> build/bdist.linux-x86_64/egg/corrade
+copying build/lib.linux-x86_64-cpython-311/_corrade.cpython-311-x86_64-linux-gnu.so -> build/bdist.linux-x86_64/egg
+copying build/lib.linux-x86_64-cpython-311/_magnum.cpython-311-x86_64-linux-gnu.so -> build/bdist.linux-x86_64/egg
+byte-compiling build/bdist.linux-x86_64/egg/magnum/__init__.py to __init__.cpython-311.pyc
+byte-compiling build/bdist.linux-x86_64/egg/magnum/platform/__init__.py to __init__.cpython-311.pyc
+byte-compiling build/bdist.linux-x86_64/egg/corrade/__init__.py to __init__.cpython-311.pyc
+creating stub loader for _corrade.cpython-311-x86_64-linux-gnu.so
+creating stub loader for _magnum.cpython-311-x86_64-linux-gnu.so
+byte-compiling build/bdist.linux-x86_64/egg/_corrade.py to _corrade.cpython-311.pyc
+byte-compiling build/bdist.linux-x86_64/egg/_magnum.py to _magnum.cpython-311.pyc
+creating build/bdist.linux-x86_64/egg/EGG-INFO
+copying magnum.egg-info/PKG-INFO -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying magnum.egg-info/SOURCES.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying magnum.egg-info/dependency_links.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying magnum.egg-info/top_level.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying magnum.egg-info/zip-safe -> build/bdist.linux-x86_64/egg/EGG-INFO
+writing build/bdist.linux-x86_64/egg/EGG-INFO/native_libs.txt
+creating dist
+creating 'dist/magnum-0.0.0-py3.11-linux-x86_64.egg' and adding 'build/bdist.linux-x86_64/egg' to it
+removing 'build/bdist.linux-x86_64/egg' (and everything under it)
+Processing magnum-0.0.0-py3.11-linux-x86_64.egg
+Copying magnum-0.0.0-py3.11-linux-x86_64.egg to /usr/local/lib/python3.11/site-packages
+Adding magnum 0.0.0 to easy-install.pth file
+
+Installed /usr/local/lib/python3.11/site-packages/magnum-0.0.0-py3.11-linux-x86_64.egg
+Processing dependencies for magnum==0.0.0
+Finished processing dependencies for magnum==0.0.0
+Removing intermediate container 1b4dbb913912
+ ---> 49df66f8df0c
+Step 29/39 : ENV VIDEOGAME_INSTALL_LOCATION=/app/install_emscripten
+ ---> Running in cdcbb34bc9f7
+Removing intermediate container cdcbb34bc9f7
+ ---> b219a4877c3a
+Step 30/39 : ENV VIDEOGAME_EMSCRIPTEN_TOOLCHAIN=/app/lib/toolchains/generic/Emscripten-wasm.cmake
+ ---> Running in 868233bc0cf0
+Removing intermediate container 868233bc0cf0
+ ---> fb0e9c140b06
+Step 31/39 : ADD ./_build_corrade.sh .
+ ---> 81bd958ce78c
+Step 32/39 : RUN ./_build_corrade.sh
+ ---> Running in cd3098242ee0
+[91m++ dirname ./_build_corrade.sh
+[0m[91m+ cd .
++ cd lib/corrade
+[0m[91m+ rm -rf build
+[0m[91m+ mkdir build
+[0m[91m+ cd build
++ cmake ..
+[0m-- The CXX compiler identification is GNU 10.2.1
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test _CORRADE_CPU_CAN_USE_IFUNC
+-- Performing Test _CORRADE_CPU_CAN_USE_IFUNC - Success
+-- The LIB_SUFFIX variable is not defined. It will be autodetected now.
+-- You can set it manually with -DLIB_SUFFIX=<value> (64 for example).
+-- LIB_SUFFIX autodetected as '', libraries will be installed into /usr/local/lib
+-- Found Git: /usr/bin/git (found version "2.30.2") 
+[91mCMake Warning at src/Corrade/CMakeLists.txt:75 (message):
+  Can't match Git version: fatal: not a git repository:
+  /app/lib/corrade/../../.git/modules/lib/corrade
+
+
+
+[0m-- Configuring done
+-- Generating done
+-- Build files have been written to: /app/lib/corrade/build
+[91m+ cmake --build . -j8
+[0mScanning dependencies of target CorradePluginManagerObjects
+Scanning dependencies of target CorradeTestSuiteObjects
+Scanning dependencies of target CorradeUtilityObjects
+Scanning dependencies of target corrade-rc
+[  3%] Building CXX object src/Corrade/PluginManager/CMakeFiles/CorradePluginManagerObjects.dir/PluginMetadata.cpp.o
+[  3%] Building CXX object src/Corrade/PluginManager/CMakeFiles/CorradePluginManagerObjects.dir/AbstractPlugin.cpp.o
+[  5%] Building CXX object src/Corrade/TestSuite/CMakeFiles/CorradeTestSuiteObjects.dir/Comparator.cpp.o
+[  6%] Building CXX object src/Corrade/TestSuite/CMakeFiles/CorradeTestSuiteObjects.dir/Tester.cpp.o
+[  8%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/Debug.cpp.o
+[ 10%] Building CXX object src/Corrade/Utility/CMakeFiles/corrade-rc.dir/rc.cpp.o
+[ 11%] Building CXX object src/Corrade/TestSuite/CMakeFiles/CorradeTestSuiteObjects.dir/Compare/File.cpp.o
+[ 13%] Building CXX object src/Corrade/TestSuite/CMakeFiles/CorradeTestSuiteObjects.dir/Compare/FileToString.cpp.o
+[ 15%] Building CXX object src/Corrade/TestSuite/CMakeFiles/CorradeTestSuiteObjects.dir/Compare/FloatingPoint.cpp.o
+[ 16%] Building CXX object src/Corrade/TestSuite/CMakeFiles/CorradeTestSuiteObjects.dir/Compare/String.cpp.o
+[ 18%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/Configuration.cpp.o
+[ 20%] Building CXX object src/Corrade/TestSuite/CMakeFiles/CorradeTestSuiteObjects.dir/Compare/StringToFile.cpp.o
+[ 21%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/ConfigurationValue.cpp.o
+[ 21%] Built target CorradePluginManagerObjects
+[ 23%] Building CXX object src/Corrade/Utility/CMakeFiles/corrade-rc.dir/Debug.cpp.o
+[ 25%] Building CXX object src/Corrade/Utility/CMakeFiles/corrade-rc.dir/Arguments.cpp.o
+[ 26%] Building CXX object src/Corrade/Utility/CMakeFiles/corrade-rc.dir/Configuration.cpp.o
+[ 28%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/MurmurHash2.cpp.o
+[ 30%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/Sha1.cpp.o
+[ 31%] Building CXX object src/Corrade/Utility/CMakeFiles/corrade-rc.dir/ConfigurationGroup.cpp.o
+[ 33%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/System.cpp.o
+[ 35%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/__/Cpu.cpp.o
+[ 36%] Building CXX object src/Corrade/Utility/CMakeFiles/corrade-rc.dir/ConfigurationValue.cpp.o
+[ 38%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/Implementation/ErrorString.cpp.o
+[ 40%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/Directory.cpp.o
+[ 41%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/FileWatcher.cpp.o
+[ 43%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/Tweakable.cpp.o
+[ 45%] Building CXX object src/Corrade/Utility/CMakeFiles/corrade-rc.dir/Format.cpp.o
+[ 46%] Building CXX object src/Corrade/Utility/CMakeFiles/corrade-rc.dir/Path.cpp.o
+[ 48%] Building CXX object src/Corrade/Utility/CMakeFiles/corrade-rc.dir/String.cpp.o
+[ 50%] Building CXX object src/Corrade/Utility/CMakeFiles/corrade-rc.dir/Implementation/ErrorString.cpp.o
+[ 51%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/Path.cpp.o
+[ 53%] Building CXX object src/Corrade/Utility/CMakeFiles/corrade-rc.dir/__/Cpu.cpp.o
+[ 55%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/TweakableParser.cpp.o
+[ 55%] Built target CorradeTestSuiteObjects
+[ 56%] Building CXX object src/Corrade/Utility/CMakeFiles/corrade-rc.dir/__/Containers/String.cpp.o
+[ 58%] Building CXX object src/Corrade/Utility/CMakeFiles/corrade-rc.dir/__/Containers/StringIterable.cpp.o
+[ 60%] Building CXX object src/Corrade/Utility/CMakeFiles/corrade-rc.dir/__/Containers/StringView.cpp.o
+[ 60%] Built target CorradeUtilityObjects
+Scanning dependencies of target CorradeUtility
+[ 63%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/ConfigurationGroup.cpp.o
+[ 65%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/Format.cpp.o
+[ 65%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/Arguments.cpp.o
+[ 66%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/Algorithms.cpp.o
+[ 70%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/JsonWriter.cpp.o
+[ 70%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/Json.cpp.o
+[ 71%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/Resource.cpp.o
+[ 73%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/String.cpp.o
+[ 75%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/Unicode.cpp.o
+[ 76%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/__/Containers/ArrayTuple.cpp.o
+[ 78%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/__/Containers/BitArray.cpp.o
+[ 80%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/__/Containers/String.cpp.o
+[ 81%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/__/Containers/StringIterable.cpp.o
+[ 83%] Linking CXX executable ../../../bin/corrade-rc
+[ 85%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/__/Containers/StringView.cpp.o
+[ 85%] Built target corrade-rc
+[ 86%] Linking CXX shared library ../../../lib/libCorradeUtility.so
+[ 86%] Built target CorradeUtility
+Scanning dependencies of target CorradeTestSuite
+Scanning dependencies of target CorradeInterconnect
+Scanning dependencies of target CorradePluginManager
+[ 88%] Building CXX object src/Corrade/TestSuite/CMakeFiles/CorradeTestSuite.dir/__/__/dummy.cpp.o
+[ 90%] Building CXX object src/Corrade/Interconnect/CMakeFiles/CorradeInterconnect.dir/Connection.cpp.o
+[ 91%] Building CXX object src/Corrade/Interconnect/CMakeFiles/CorradeInterconnect.dir/Emitter.cpp.o
+[ 93%] Building CXX object src/Corrade/Interconnect/CMakeFiles/CorradeInterconnect.dir/Receiver.cpp.o
+[ 95%] Building CXX object src/Corrade/PluginManager/CMakeFiles/CorradePluginManager.dir/AbstractManager.cpp.o
+[ 96%] Linking CXX shared library ../../../lib/libCorradeTestSuite.so
+[ 96%] Built target CorradeTestSuite
+[ 98%] Linking CXX shared library ../../../lib/libCorradeInterconnect.so
+[ 98%] Built target CorradeInterconnect
+[100%] Linking CXX shared library ../../../lib/libCorradePluginManager.so
+[100%] Built target CorradePluginManager
+[91m+ cmake --build . --target install
+[0m[ 21%] Built target CorradeUtilityObjects
+[ 46%] Built target CorradeUtility
+[ 53%] Built target CorradeInterconnect
+[ 56%] Built target CorradePluginManagerObjects
+[ 60%] Built target CorradePluginManager
+[ 71%] Built target CorradeTestSuiteObjects
+[ 75%] Built target CorradeTestSuite
+[100%] Built target corrade-rc
+Install the project...
+-- Install configuration: ""
+-- Up-to-date: /usr/local/share/cmake/Corrade/CorradeConfig.cmake
+-- Up-to-date: /usr/local/share/cmake/Corrade/CorradeLibSuffix.cmake
+-- Up-to-date: /usr/local/share/cmake/Corrade/FindCorrade.cmake
+-- Up-to-date: /usr/local/share/cmake/Corrade/UseCorrade.cmake
+-- Up-to-date: /usr/local/include/Corrade/Corrade.h
+-- Up-to-date: /usr/local/include/Corrade/Cpu.h
+-- Up-to-date: /usr/local/include/Corrade/Tags.h
+-- Installing: /usr/local/include/Corrade/configure.h
+-- Installing: /usr/local/include/Corrade/version.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/AnyReference.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/Array.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/ArrayTuple.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/ArrayView.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/ArrayViewStl.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/ArrayViewStlSpan.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/BigEnumSet.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/BigEnumSet.hpp
+-- Up-to-date: /usr/local/include/Corrade/Containers/BitArray.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/BitArrayView.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/constructHelpers.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/Containers.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/EnumSet.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/EnumSet.hpp
+-- Up-to-date: /usr/local/include/Corrade/Containers/GrowableArray.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/initializeHelpers.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/iterableHelpers.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/Iterable.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/LinkedList.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/MoveReference.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/Optional.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/OptionalStl.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/Pair.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/PairStl.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/Pointer.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/PointerStl.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/Reference.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/ScopeGuard.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/sequenceHelpers.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/StaticArray.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/StridedArrayView.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/StridedArrayViewStl.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/StridedDimensions.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/String.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/StringIterable.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/StringStl.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/StringStlHash.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/StringStlView.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/StringView.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/Triple.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/TripleStl.h
+-- Up-to-date: /usr/local/include/Corrade/Containers/Tags.h
+-- Installing: /usr/local/lib/libCorradeInterconnect.so.2.4
+-- Up-to-date: /usr/local/lib/libCorradeInterconnect.so.2
+-- Set runtime path of "/usr/local/lib/libCorradeInterconnect.so.2.4" to ""
+-- Up-to-date: /usr/local/lib/libCorradeInterconnect.so
+-- Up-to-date: /usr/local/include/Corrade/Interconnect/Connection.h
+-- Up-to-date: /usr/local/include/Corrade/Interconnect/Emitter.h
+-- Up-to-date: /usr/local/include/Corrade/Interconnect/Interconnect.h
+-- Up-to-date: /usr/local/include/Corrade/Interconnect/Receiver.h
+-- Up-to-date: /usr/local/include/Corrade/Interconnect/StateMachine.h
+-- Up-to-date: /usr/local/include/Corrade/Interconnect/visibility.h
+-- Installing: /usr/local/lib/libCorradePluginManager.so.2.4
+-- Up-to-date: /usr/local/lib/libCorradePluginManager.so.2
+-- Set runtime path of "/usr/local/lib/libCorradePluginManager.so.2.4" to ""
+-- Up-to-date: /usr/local/lib/libCorradePluginManager.so
+-- Up-to-date: /usr/local/include/Corrade/PluginManager/AbstractPlugin.h
+-- Up-to-date: /usr/local/include/Corrade/PluginManager/AbstractManager.h
+-- Up-to-date: /usr/local/include/Corrade/PluginManager/AbstractManagingPlugin.h
+-- Up-to-date: /usr/local/include/Corrade/PluginManager/Manager.h
+-- Up-to-date: /usr/local/include/Corrade/PluginManager/Manager.hpp
+-- Up-to-date: /usr/local/include/Corrade/PluginManager/PluginManager.h
+-- Up-to-date: /usr/local/include/Corrade/PluginManager/PluginMetadata.h
+-- Up-to-date: /usr/local/include/Corrade/PluginManager/visibility.h
+-- Installing: /usr/local/lib/libCorradeTestSuite.so.2.4
+-- Up-to-date: /usr/local/lib/libCorradeTestSuite.so.2
+-- Set runtime path of "/usr/local/lib/libCorradeTestSuite.so.2.4" to ""
+-- Up-to-date: /usr/local/lib/libCorradeTestSuite.so
+-- Up-to-date: /usr/local/include/Corrade/TestSuite/Comparator.h
+-- Up-to-date: /usr/local/include/Corrade/TestSuite/Tester.h
+-- Up-to-date: /usr/local/include/Corrade/TestSuite/TestSuite.h
+-- Up-to-date: /usr/local/include/Corrade/TestSuite/visibility.h
+-- Up-to-date: /usr/local/include/Corrade/TestSuite/Compare/Container.h
+-- Up-to-date: /usr/local/include/Corrade/TestSuite/Compare/File.h
+-- Up-to-date: /usr/local/include/Corrade/TestSuite/Compare/FileToString.h
+-- Up-to-date: /usr/local/include/Corrade/TestSuite/Compare/FloatingPoint.h
+-- Up-to-date: /usr/local/include/Corrade/TestSuite/Compare/Numeric.h
+-- Up-to-date: /usr/local/include/Corrade/TestSuite/Compare/SortedContainer.h
+-- Up-to-date: /usr/local/include/Corrade/TestSuite/Compare/String.h
+-- Up-to-date: /usr/local/include/Corrade/TestSuite/Compare/StringToFile.h
+-- Installing: /usr/local/lib/libCorradeUtility.so.2.4
+-- Up-to-date: /usr/local/lib/libCorradeUtility.so.2
+-- Up-to-date: /usr/local/lib/libCorradeUtility.so
+-- Up-to-date: /usr/local/include/Corrade/Utility/Algorithms.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/Arguments.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/AbstractHash.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/Assert.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/Configuration.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/ConfigurationGroup.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/ConfigurationValue.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/Debug.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/DebugAssert.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/DebugStl.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/DebugStlStringView.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/Endianness.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/EndiannessBatch.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/Format.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/FormatStl.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/FormatStlStringView.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/IntrinsicsSse2.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/IntrinsicsSse3.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/IntrinsicsSsse3.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/IntrinsicsSse4.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/IntrinsicsAvx.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/Json.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/JsonWriter.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/Macros.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/Math.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/Memory.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/Move.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/MurmurHash2.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/Path.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/Resource.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/Sha1.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/String.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/StlForwardArray.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/StlForwardString.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/StlForwardTuple.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/StlForwardVector.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/StlMath.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/System.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/TypeTraits.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/Unicode.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/utilities.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/Utility.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/VisibilityMacros.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/visibility.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/Directory.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/FileWatcher.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/Tweakable.h
+-- Up-to-date: /usr/local/include/Corrade/Utility/TweakableParser.h
+-- Installing: /usr/local/bin/corrade-rc
+-- Up-to-date: /usr/local/share/corrade/debuggers/gdb
+-- Up-to-date: /usr/local/share/corrade/debuggers/gdb/__init__.py
+-- Up-to-date: /usr/local/share/corrade/debuggers/gdb/printers.py
+[91m+ rm -rf emscripten-build
+[0m[91m+ mkdir emscripten-build
+[0m[91m+ cd emscripten-build
+[0m[91m+ cmake .. -DCMAKE_TOOLCHAIN_FILE=/app/lib/toolchains/generic/Emscripten-wasm.cmake -DCMAKE_INSTALL_PREFIX=/app/install_emscripten -DCORRADE_BUILD_STATIC=ON
+[0m-- The CXX compiler identification is Clang 11.0.1
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/em++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- The LIB_SUFFIX variable is not defined. It will be autodetected now.
+-- You can set it manually with -DLIB_SUFFIX=<value> (64 for example).
+-- LIB_SUFFIX autodetected as '', libraries will be installed into /app/install_emscripten/lib
+-- Found Git: /usr/bin/git (found version "2.30.2") 
+[91mCMake Warning at src/Corrade/CMakeLists.txt:75 (message):
+  Can't match Git version: fatal: not a git repository:
+  /app/lib/corrade/../../.git/modules/lib/corrade
+
+
+
+[0m-- Configuring done
+-- Generating done
+-- Build files have been written to: /app/lib/corrade/emscripten-build
+[91m+ cmake --build . -j8
+[0mScanning dependencies of target CorradePluginManagerObjects
+Scanning dependencies of target CorradeTestSuiteObjects
+Scanning dependencies of target CorradeUtilityObjects
+[  4%] Building CXX object src/Corrade/PluginManager/CMakeFiles/CorradePluginManagerObjects.dir/AbstractPlugin.cpp.o
+[  4%] Building CXX object src/Corrade/PluginManager/CMakeFiles/CorradePluginManagerObjects.dir/PluginMetadata.cpp.o
+[  6%] Building CXX object src/Corrade/TestSuite/CMakeFiles/CorradeTestSuiteObjects.dir/Comparator.cpp.o
+[  8%] Building CXX object src/Corrade/TestSuite/CMakeFiles/CorradeTestSuiteObjects.dir/Tester.cpp.o
+[ 11%] Building CXX object src/Corrade/TestSuite/CMakeFiles/CorradeTestSuiteObjects.dir/Compare/FloatingPoint.cpp.o
+[ 13%] Building CXX object src/Corrade/TestSuite/CMakeFiles/CorradeTestSuiteObjects.dir/Compare/FileToString.cpp.o
+[ 15%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/Debug.cpp.o
+[ 17%] Building CXX object src/Corrade/TestSuite/CMakeFiles/CorradeTestSuiteObjects.dir/Compare/File.cpp.o
+[ 20%] Building CXX object src/Corrade/TestSuite/CMakeFiles/CorradeTestSuiteObjects.dir/Compare/String.cpp.o
+[ 22%] Building CXX object src/Corrade/TestSuite/CMakeFiles/CorradeTestSuiteObjects.dir/Compare/StringToFile.cpp.o
+[ 24%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/Configuration.cpp.o
+[ 26%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/ConfigurationValue.cpp.o
+[ 28%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/MurmurHash2.cpp.o
+[ 31%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/Sha1.cpp.o
+[ 33%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/System.cpp.o
+[ 35%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/__/Cpu.cpp.o
+[ 37%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/Implementation/ErrorString.cpp.o
+[ 40%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/Directory.cpp.o
+[ 42%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/FileWatcher.cpp.o
+[ 44%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/Tweakable.cpp.o
+[ 46%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/Path.cpp.o
+[ 48%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtilityObjects.dir/TweakableParser.cpp.o
+[ 48%] Built target CorradeTestSuiteObjects
+[ 48%] Built target CorradePluginManagerObjects
+[ 48%] Built target CorradeUtilityObjects
+Scanning dependencies of target CorradeUtility
+[ 55%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/Algorithms.cpp.o
+[ 55%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/Format.cpp.o
+[ 57%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/ConfigurationGroup.cpp.o
+[ 57%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/Arguments.cpp.o
+[ 60%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/String.cpp.o
+[ 62%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/Resource.cpp.o
+[ 64%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/Json.cpp.o
+[ 66%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/JsonWriter.cpp.o
+[ 68%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/Unicode.cpp.o
+[ 71%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/__/Containers/ArrayTuple.cpp.o
+[ 73%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/__/Containers/BitArray.cpp.o
+[ 75%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/__/Containers/String.cpp.o
+[ 77%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/__/Containers/StringIterable.cpp.o
+[ 80%] Building CXX object src/Corrade/Utility/CMakeFiles/CorradeUtility.dir/__/Containers/StringView.cpp.o
+[ 82%] Linking CXX static library ../../../lib/CorradeUtility.bc
+[ 82%] Built target CorradeUtility
+Scanning dependencies of target CorradeTestSuite
+Scanning dependencies of target CorradeInterconnect
+Scanning dependencies of target CorradePluginManager
+[ 84%] Building CXX object src/Corrade/TestSuite/CMakeFiles/CorradeTestSuite.dir/__/__/dummy.cpp.o
+[ 88%] Building CXX object src/Corrade/Interconnect/CMakeFiles/CorradeInterconnect.dir/Receiver.cpp.o
+[ 91%] Building CXX object src/Corrade/Interconnect/CMakeFiles/CorradeInterconnect.dir/Emitter.cpp.o
+[ 91%] Building CXX object src/Corrade/Interconnect/CMakeFiles/CorradeInterconnect.dir/Connection.cpp.o
+[ 93%] Building CXX object src/Corrade/PluginManager/CMakeFiles/CorradePluginManager.dir/AbstractManager.cpp.o
+[ 95%] Linking CXX static library ../../../lib/CorradeTestSuite.bc
+[ 95%] Built target CorradeTestSuite
+[ 97%] Linking CXX static library ../../../lib/CorradeInterconnect.bc
+[ 97%] Built target CorradeInterconnect
+[100%] Linking CXX static library ../../../lib/CorradePluginManager.bc
+[100%] Built target CorradePluginManager
+[91m+ cmake --build . --target install
+[0m[ 28%] Built target CorradeUtilityObjects
+[ 62%] Built target CorradeUtility
+[ 71%] Built target CorradeInterconnect
+[ 75%] Built target CorradePluginManagerObjects
+[ 80%] Built target CorradePluginManager
+[ 95%] Built target CorradeTestSuiteObjects
+[100%] Built target CorradeTestSuite
+Install the project...
+-- Install configuration: ""
+-- Installing: /app/install_emscripten/share/cmake/Corrade/CorradeConfig.cmake
+-- Installing: /app/install_emscripten/share/cmake/Corrade/CorradeLibSuffix.cmake
+-- Installing: /app/install_emscripten/share/cmake/Corrade/FindCorrade.cmake
+-- Installing: /app/install_emscripten/share/cmake/Corrade/UseCorrade.cmake
+-- Installing: /app/install_emscripten/include/Corrade/Corrade.h
+-- Installing: /app/install_emscripten/include/Corrade/Cpu.h
+-- Installing: /app/install_emscripten/include/Corrade/Tags.h
+-- Installing: /app/install_emscripten/include/Corrade/configure.h
+-- Installing: /app/install_emscripten/include/Corrade/version.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/AnyReference.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/Array.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/ArrayTuple.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/ArrayView.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/ArrayViewStl.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/ArrayViewStlSpan.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/BigEnumSet.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/BigEnumSet.hpp
+-- Installing: /app/install_emscripten/include/Corrade/Containers/BitArray.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/BitArrayView.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/constructHelpers.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/Containers.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/EnumSet.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/EnumSet.hpp
+-- Installing: /app/install_emscripten/include/Corrade/Containers/GrowableArray.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/initializeHelpers.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/iterableHelpers.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/Iterable.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/LinkedList.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/MoveReference.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/Optional.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/OptionalStl.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/Pair.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/PairStl.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/Pointer.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/PointerStl.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/Reference.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/ScopeGuard.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/sequenceHelpers.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/StaticArray.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/StridedArrayView.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/StridedArrayViewStl.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/StridedDimensions.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/String.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/StringIterable.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/StringStl.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/StringStlHash.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/StringStlView.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/StringView.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/Triple.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/TripleStl.h
+-- Installing: /app/install_emscripten/include/Corrade/Containers/Tags.h
+-- Installing: /app/install_emscripten/lib/CorradeInterconnect.bc
+-- Installing: /app/install_emscripten/include/Corrade/Interconnect/Connection.h
+-- Installing: /app/install_emscripten/include/Corrade/Interconnect/Emitter.h
+-- Installing: /app/install_emscripten/include/Corrade/Interconnect/Interconnect.h
+-- Installing: /app/install_emscripten/include/Corrade/Interconnect/Receiver.h
+-- Installing: /app/install_emscripten/include/Corrade/Interconnect/StateMachine.h
+-- Installing: /app/install_emscripten/include/Corrade/Interconnect/visibility.h
+-- Installing: /app/install_emscripten/lib/CorradePluginManager.bc
+-- Installing: /app/install_emscripten/include/Corrade/PluginManager/AbstractPlugin.h
+-- Installing: /app/install_emscripten/include/Corrade/PluginManager/AbstractManager.h
+-- Installing: /app/install_emscripten/include/Corrade/PluginManager/AbstractManagingPlugin.h
+-- Installing: /app/install_emscripten/include/Corrade/PluginManager/Manager.h
+-- Installing: /app/install_emscripten/include/Corrade/PluginManager/Manager.hpp
+-- Installing: /app/install_emscripten/include/Corrade/PluginManager/PluginManager.h
+-- Installing: /app/install_emscripten/include/Corrade/PluginManager/PluginMetadata.h
+-- Installing: /app/install_emscripten/include/Corrade/PluginManager/visibility.h
+-- Installing: /app/install_emscripten/lib/CorradeTestSuite.bc
+-- Installing: /app/install_emscripten/include/Corrade/TestSuite/Comparator.h
+-- Installing: /app/install_emscripten/include/Corrade/TestSuite/Tester.h
+-- Installing: /app/install_emscripten/include/Corrade/TestSuite/TestSuite.h
+-- Installing: /app/install_emscripten/include/Corrade/TestSuite/visibility.h
+-- Installing: /app/install_emscripten/share/corrade/TestSuite/EmscriptenRunner.html.in
+-- Installing: /app/install_emscripten/include/Corrade/TestSuite/Compare/Container.h
+-- Installing: /app/install_emscripten/include/Corrade/TestSuite/Compare/File.h
+-- Installing: /app/install_emscripten/include/Corrade/TestSuite/Compare/FileToString.h
+-- Installing: /app/install_emscripten/include/Corrade/TestSuite/Compare/FloatingPoint.h
+-- Installing: /app/install_emscripten/include/Corrade/TestSuite/Compare/Numeric.h
+-- Installing: /app/install_emscripten/include/Corrade/TestSuite/Compare/SortedContainer.h
+-- Installing: /app/install_emscripten/include/Corrade/TestSuite/Compare/String.h
+-- Installing: /app/install_emscripten/include/Corrade/TestSuite/Compare/StringToFile.h
+-- Installing: /app/install_emscripten/lib/CorradeUtility.bc
+-- Installing: /app/install_emscripten/include/Corrade/Utility/Algorithms.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/Arguments.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/AbstractHash.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/Assert.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/Configuration.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/ConfigurationGroup.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/ConfigurationValue.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/Debug.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/DebugAssert.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/DebugStl.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/DebugStlStringView.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/Endianness.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/EndiannessBatch.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/Format.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/FormatStl.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/FormatStlStringView.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/IntrinsicsSse2.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/IntrinsicsSse3.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/IntrinsicsSsse3.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/IntrinsicsSse4.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/IntrinsicsAvx.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/Json.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/JsonWriter.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/Macros.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/Math.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/Memory.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/Move.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/MurmurHash2.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/Path.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/Resource.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/Sha1.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/String.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/StlForwardArray.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/StlForwardString.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/StlForwardTuple.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/StlForwardVector.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/StlMath.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/System.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/TypeTraits.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/Unicode.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/utilities.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/Utility.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/VisibilityMacros.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/visibility.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/Directory.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/FileWatcher.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/Tweakable.h
+-- Installing: /app/install_emscripten/include/Corrade/Utility/TweakableParser.h
+Removing intermediate container cd3098242ee0
+ ---> 4077a7b2715e
+Step 33/39 : ADD ./_build_magnum.sh .
+ ---> 3687a35011bb
+Step 34/39 : RUN ./_build_magnum.sh
+ ---> Running in 843959c04fe3
+[91m++ dirname ./_build_magnum.sh
+[0m[91m+ cd .
++ cd lib/magnum
+[0m[91m+ rm -rf build
+[0m[91m+ mkdir build
+[0m[91m+ cd build
++ cmake .. -DMAGNUM_WITH_PYTHON=ON -DMAGNUM_BUILD_STATIC=ON -DCMAKE_TOOLCHAIN_FILE=/app/lib/toolchains/generic/Emscripten-wasm.cmake '-DCMAKE_PREFIX_PATH=/app/install_emscripten;/usr/local;/usr/share;/usr/lib' -DCMAKE_FIND_ROOT_PATH=/app/install_emscripten -DCMAKE_INSTALL_PREFIX=/app/install_emscripten
+[0m-- The CXX compiler identification is Clang 11.0.1
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/em++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found Corrade: /app/install_emscripten/include  found components: Containers rc Utility 
+-- Found OpenGLES2: GL  
+-- The LIB_SUFFIX variable is not defined. It will be autodetected now.
+-- You can set it manually with -DLIB_SUFFIX=<value> (64 for example).
+-- LIB_SUFFIX autodetected as '', libraries will be installed into /app/install_emscripten/lib
+-- Found Git: /usr/bin/git (found version "2.30.2") 
+[91mCMake Warning at src/Magnum/CMakeLists.txt:68 (message):
+  Can't match Git version: fatal: not a git repository:
+  /app/lib/magnum/../../.git/modules/lib/magnum
+
+
+
+[0m-- Found Corrade: /app/install_emscripten/include  found components: Containers rc Utility Main TestSuite 
+-- Found Corrade: /app/install_emscripten/include  found components: Containers rc Utility PluginManager 
+-- Configuring done
+-- Generating done
+[91mCMake Warning:
+  Manually-specified variables were not used by the project:
+
+    MAGNUM_WITH_PYTHON
+
+
+[0m-- Build files have been written to: /app/lib/magnum/build
+[91m+ make -j8
+[0mScanning dependencies of target MagnumSceneGraphObjects
+Scanning dependencies of target MagnumObjects
+Scanning dependencies of target MagnumTradeObjects
+Scanning dependencies of target MagnumMathObjects
+Scanning dependencies of target MagnumShaders_RESOURCES_GL-dependencies
+Scanning dependencies of target MagnumMeshToolsObjects
+[  1%] Building CXX object src/Magnum/CMakeFiles/MagnumObjects.dir/FileCallback.cpp.o
+[  2%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTradeObjects.dir/ArrayAllocator.cpp.o
+[  3%] Building CXX object src/Magnum/CMakeFiles/MagnumMathObjects.dir/Math/Angle.cpp.o
+[  3%] Building CXX object src/Magnum/SceneGraph/CMakeFiles/MagnumSceneGraphObjects.dir/Animable.cpp.o
+[  3%] Building CXX object src/Magnum/MeshTools/CMakeFiles/MagnumMeshToolsObjects.dir/BoundingVolume.cpp.o
+Scanning dependencies of target MagnumDebugToolsObjects
+[  3%] Built target MagnumShaders_RESOURCES_GL-dependencies
+[  4%] Building CXX object src/Magnum/DebugTools/CMakeFiles/MagnumDebugToolsObjects.dir/ColorMap.cpp.o
+Scanning dependencies of target MagnumGLObjects
+[  5%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/AbstractObject.cpp.o
+Scanning dependencies of target MagnumMaterialToolsObjects
+[  5%] Building CXX object src/Magnum/MaterialTools/CMakeFiles/MagnumMaterialToolsObjects.dir/PhongToPbrMetallicRoughness.cpp.o
+[  6%] Building CXX object src/Magnum/CMakeFiles/MagnumObjects.dir/ImageFlags.cpp.o
+[  7%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTradeObjects.dir/Data.cpp.o
+[  8%] Building CXX object src/Magnum/CMakeFiles/MagnumMathObjects.dir/Math/Color.cpp.o
+[  9%] Building CXX object src/Magnum/DebugTools/CMakeFiles/MagnumDebugToolsObjects.dir/Profiler.cpp.o
+[ 10%] Building CXX object src/Magnum/MeshTools/CMakeFiles/MagnumMeshToolsObjects.dir/Tipsify.cpp.o
+[ 10%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/AbstractQuery.cpp.o
+[ 10%] Building CXX object src/Magnum/CMakeFiles/MagnumObjects.dir/PixelStorage.cpp.o
+[ 10%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTradeObjects.dir/TextureData.cpp.o
+[ 11%] Building CXX object src/Magnum/CMakeFiles/MagnumObjects.dir/Resource.cpp.o
+[ 12%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/Buffer.cpp.o
+[ 13%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTradeObjects.dir/MeshObjectData2D.cpp.o
+[ 13%] Building CXX object src/Magnum/CMakeFiles/MagnumMathObjects.dir/Math/Half.cpp.o
+[ 13%] Building CXX object src/Magnum/DebugTools/CMakeFiles/MagnumDebugToolsObjects.dir/ResourceManager.cpp.o
+[ 13%] Built target MagnumSceneGraphObjects
+Scanning dependencies of target MagnumTextureTools_RESOURCES-dependencies
+[ 13%] Building CXX object src/Magnum/MeshTools/CMakeFiles/MagnumMeshToolsObjects.dir/FullScreenTriangle.cpp.o
+[ 13%] Built target MagnumTextureTools_RESOURCES-dependencies
+Scanning dependencies of target MagnumTextObjects
+[ 13%] Building CXX object src/Magnum/Text/CMakeFiles/MagnumTextObjects.dir/DistanceFieldGlyphCache.cpp.o
+[ 14%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/Context.cpp.o
+[ 15%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTradeObjects.dir/MeshObjectData3D.cpp.o
+[ 15%] Building CXX object src/Magnum/CMakeFiles/MagnumObjects.dir/Sampler.cpp.o
+[ 16%] Built target MagnumMeshToolsObjects
+[ 16%] Building CXX object src/Magnum/CMakeFiles/MagnumObjects.dir/Timeline.cpp.o
+[ 17%] Building CXX object src/Magnum/DebugTools/CMakeFiles/MagnumDebugToolsObjects.dir/Screenshot.cpp.o
+[ 18%] Building CXX object src/Magnum/CMakeFiles/MagnumMathObjects.dir/Math/Packing.cpp.o
+[ 18%] Built target MagnumTradeObjects
+[ 19%] Compiling data resource file /app/lib/magnum/build/src/Magnum/Shaders/resource_MagnumShaders_RESOURCES_GL.cpp
+[ 19%] Built target MagnumObjects
+[ 20%] Building CXX object src/Magnum/DebugTools/CMakeFiles/MagnumDebugToolsObjects.dir/TextureImage.cpp.o
+Scanning dependencies of target MagnumShadersObjects
+[ 20%] Building CXX object src/Magnum/Shaders/CMakeFiles/MagnumShadersObjects.dir/resource_MagnumShaders_RESOURCES_GL.cpp.o
+[ 20%] Building CXX object src/Magnum/CMakeFiles/MagnumMathObjects.dir/Math/instantiation.cpp.o
+[ 21%] Building CXX object src/Magnum/Text/CMakeFiles/MagnumTextObjects.dir/GlyphCache.cpp.o
+[ 21%] Built target MagnumMaterialToolsObjects
+[ 21%] Building CXX object src/Magnum/DebugTools/CMakeFiles/MagnumDebugToolsObjects.dir/ForceRenderer.cpp.o
+[ 22%] Building CXX object src/Magnum/DebugTools/CMakeFiles/MagnumDebugToolsObjects.dir/ObjectRenderer.cpp.o
+[ 22%] Building CXX object src/Magnum/DebugTools/CMakeFiles/MagnumDebugToolsObjects.dir/CompareMaterial.cpp.o
+[ 22%] Built target MagnumShadersObjects
+[ 22%] Building CXX object src/Magnum/Text/CMakeFiles/MagnumTextObjects.dir/Renderer.cpp.o
+[ 22%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/DefaultFramebuffer.cpp.o
+[ 23%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/Framebuffer.cpp.o
+[ 23%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/OpenGL.cpp.o
+[ 23%] Built target MagnumMathObjects
+[ 24%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/Renderbuffer.cpp.o
+Scanning dependencies of target Magnum
+[ 24%] Building CXX object src/Magnum/CMakeFiles/Magnum.dir/Math/Functions.cpp.o
+[ 25%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/Renderer.cpp.o
+[ 25%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/Texture.cpp.o
+[ 26%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/TextureFormat.cpp.o
+[ 26%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/TimeQuery.cpp.o
+[ 27%] Building CXX object src/Magnum/CMakeFiles/Magnum.dir/Math/PackingBatch.cpp.o
+[ 27%] Built target MagnumTextObjects
+[ 28%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/Version.cpp.o
+[ 29%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/Implementation/BufferState.cpp.o
+[ 29%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/Implementation/ContextState.cpp.o
+[ 30%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/Implementation/FramebufferState.cpp.o
+[ 31%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/Implementation/MeshState.cpp.o
+[ 31%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/Implementation/QueryState.cpp.o
+[ 32%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/Implementation/RendererState.cpp.o
+[ 32%] Building CXX object src/Magnum/CMakeFiles/Magnum.dir/Image.cpp.o
+[ 32%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/Implementation/ShaderProgramState.cpp.o
+[ 33%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/Implementation/ShaderState.cpp.o
+[ 34%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/Implementation/State.cpp.o
+[ 34%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/Implementation/TextureState.cpp.o
+[ 35%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/Implementation/driverSpecific.cpp.o
+[ 35%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGLObjects.dir/Implementation/maxTextureSize.cpp.o
+[ 36%] Building CXX object src/Magnum/CMakeFiles/Magnum.dir/ImageView.cpp.o
+[ 37%] Building CXX object src/Magnum/CMakeFiles/Magnum.dir/Mesh.cpp.o
+[ 37%] Building CXX object src/Magnum/CMakeFiles/Magnum.dir/PixelFormat.cpp.o
+[ 38%] Building CXX object src/Magnum/CMakeFiles/Magnum.dir/VertexFormat.cpp.o
+[ 38%] Building CXX object src/Magnum/CMakeFiles/Magnum.dir/Animation/Player.cpp.o
+[ 39%] Building CXX object src/Magnum/CMakeFiles/Magnum.dir/Animation/Interpolation.cpp.o
+[ 39%] Built target MagnumGLObjects
+[ 40%] Linking CXX static library ../../lib/Magnum.bc
+[ 40%] Built target MagnumDebugToolsObjects
+[ 40%] Built target Magnum
+Scanning dependencies of target MagnumShaderTools
+Scanning dependencies of target MagnumSceneGraph
+[ 41%] Building CXX object src/Magnum/ShaderTools/CMakeFiles/MagnumShaderTools.dir/Stage.cpp.o
+[ 41%] Building CXX object src/Magnum/ShaderTools/CMakeFiles/MagnumShaderTools.dir/AbstractConverter.cpp.o
+[ 41%] Building CXX object src/Magnum/SceneGraph/CMakeFiles/MagnumSceneGraph.dir/instantiation.cpp.o
+Scanning dependencies of target MagnumGL
+Scanning dependencies of target MagnumTrade
+[ 43%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGL.dir/AbstractShaderProgram.cpp.o
+[ 43%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGL.dir/AbstractTexture.cpp.o
+[ 43%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGL.dir/AbstractFramebuffer.cpp.o
+[ 44%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGL.dir/Attribute.cpp.o
+[ 44%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTrade.dir/AbstractImageConverter.cpp.o
+[ 44%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGL.dir/CubeMapTexture.cpp.o
+[ 45%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGL.dir/Mesh.cpp.o
+[ 46%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGL.dir/MeshView.cpp.o
+[ 46%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGL.dir/PixelFormat.cpp.o
+[ 47%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGL.dir/Sampler.cpp.o
+[ 48%] Linking CXX static library ../../../lib/MagnumShaderTools.bc
+[ 49%] Building CXX object src/Magnum/GL/CMakeFiles/MagnumGL.dir/Shader.cpp.o
+[ 50%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTrade.dir/AbstractImporter.cpp.o
+[ 50%] Built target MagnumShaderTools
+[ 50%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTrade.dir/AbstractSceneConverter.cpp.o
+[ 51%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTrade.dir/AnimationData.cpp.o
+[ 52%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTrade.dir/CameraData.cpp.o
+[ 52%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTrade.dir/FlatMaterialData.cpp.o
+[ 53%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTrade.dir/ImageData.cpp.o
+[ 53%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTrade.dir/LightData.cpp.o
+[ 54%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTrade.dir/MaterialData.cpp.o
+[ 55%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTrade.dir/MeshData.cpp.o
+[ 55%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTrade.dir/PbrClearCoatMaterialData.cpp.o
+[ 56%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTrade.dir/PbrMetallicRoughnessMaterialData.cpp.o
+[ 57%] Linking CXX static library ../../../lib/MagnumSceneGraph.bc
+[ 57%] Linking CXX static library ../../../lib/MagnumGL.bc
+[ 57%] Built target MagnumSceneGraph
+[ 58%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTrade.dir/PbrSpecularGlossinessMaterialData.cpp.o
+[ 58%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTrade.dir/PhongMaterialData.cpp.o
+[ 58%] Built target MagnumGL
+[ 59%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTrade.dir/SceneData.cpp.o
+[ 59%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTrade.dir/SkinData.cpp.o
+[ 60%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTrade.dir/MeshData2D.cpp.o
+[ 61%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTrade.dir/MeshData3D.cpp.o
+[ 61%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTrade.dir/ObjectData2D.cpp.o
+[ 62%] Building CXX object src/Magnum/Trade/CMakeFiles/MagnumTrade.dir/ObjectData3D.cpp.o
+Scanning dependencies of target MagnumShaders
+[ 63%] Building CXX object src/Magnum/Shaders/CMakeFiles/MagnumShaders.dir/DistanceFieldVectorGL.cpp.o
+[ 64%] Compiling data resource file /app/lib/magnum/build/src/Magnum/TextureTools/resource_MagnumTextureTools_RESOURCES.cpp
+Scanning dependencies of target MagnumTextureTools
+[ 65%] Building CXX object src/Magnum/TextureTools/CMakeFiles/MagnumTextureTools.dir/Atlas.cpp.o
+[ 65%] Building CXX object src/Magnum/TextureTools/CMakeFiles/MagnumTextureTools.dir/DistanceField.cpp.o
+[ 66%] Building CXX object src/Magnum/TextureTools/CMakeFiles/MagnumTextureTools.dir/resource_MagnumTextureTools_RESOURCES.cpp.o
+[ 66%] Building CXX object src/Magnum/Shaders/CMakeFiles/MagnumShaders.dir/FlatGL.cpp.o
+[ 67%] Building CXX object src/Magnum/Shaders/CMakeFiles/MagnumShaders.dir/MeshVisualizerGL.cpp.o
+[ 68%] Building CXX object src/Magnum/Shaders/CMakeFiles/MagnumShaders.dir/PhongGL.cpp.o
+[ 69%] Linking CXX static library ../../../lib/MagnumTextureTools.bc
+[ 69%] Building CXX object src/Magnum/Shaders/CMakeFiles/MagnumShaders.dir/VectorGL.cpp.o
+[ 70%] Building CXX object src/Magnum/Shaders/CMakeFiles/MagnumShaders.dir/VertexColorGL.cpp.o
+[ 70%] Built target MagnumTextureTools
+[ 70%] Building CXX object src/Magnum/Shaders/CMakeFiles/MagnumShaders.dir/glShaderWrapper.cpp.o
+Scanning dependencies of target MagnumText
+[ 71%] Building CXX object src/Magnum/Text/CMakeFiles/MagnumText.dir/AbstractFont.cpp.o
+[ 71%] Building CXX object src/Magnum/Text/CMakeFiles/MagnumText.dir/AbstractFontConverter.cpp.o
+[ 72%] Building CXX object src/Magnum/Text/CMakeFiles/MagnumText.dir/AbstractGlyphCache.cpp.o
+[ 73%] Linking CXX static library ../../../lib/MagnumShaders.bc
+[ 73%] Built target MagnumShaders
+[ 74%] Linking CXX static library ../../../lib/MagnumText.bc
+[ 74%] Built target MagnumText
+[ 74%] Linking CXX static library ../../../lib/MagnumTrade.bc
+[ 74%] Built target MagnumTrade
+Scanning dependencies of target MagnumMaterialTools
+Scanning dependencies of target MagnumSceneTools
+[ 75%] Building CXX object src/Magnum/MaterialTools/CMakeFiles/MagnumMaterialTools.dir/__/__/dummy.cpp.o
+[ 77%] Building CXX object src/Magnum/SceneTools/CMakeFiles/MagnumSceneTools.dir/FlattenMeshHierarchy.cpp.o
+[ 77%] Building CXX object src/Magnum/SceneTools/CMakeFiles/MagnumSceneTools.dir/OrderClusterParents.cpp.o
+Scanning dependencies of target MagnumMeshTools
+[ 79%] Building CXX object src/Magnum/MeshTools/CMakeFiles/MagnumMeshTools.dir/Combine.cpp.o
+[ 79%] Building CXX object src/Magnum/MeshTools/CMakeFiles/MagnumMeshTools.dir/FilterAttributes.cpp.o
+[ 79%] Building CXX object src/Magnum/MeshTools/CMakeFiles/MagnumMeshTools.dir/CompressIndices.cpp.o
+[ 80%] Building CXX object src/Magnum/MeshTools/CMakeFiles/MagnumMeshTools.dir/Concatenate.cpp.o
+[ 80%] Building CXX object src/Magnum/MeshTools/CMakeFiles/MagnumMeshTools.dir/Duplicate.cpp.o
+[ 81%] Linking CXX static library ../../../lib/MagnumMaterialTools.bc
+[ 81%] Built target MagnumMaterialTools
+[ 82%] Building CXX object src/Magnum/MeshTools/CMakeFiles/MagnumMeshTools.dir/GenerateIndices.cpp.o
+[ 83%] Building CXX object src/Magnum/MeshTools/CMakeFiles/MagnumMeshTools.dir/FlipNormals.cpp.o
+[ 83%] Linking CXX static library ../../../lib/MagnumSceneTools.bc
+[ 83%] Building CXX object src/Magnum/MeshTools/CMakeFiles/MagnumMeshTools.dir/GenerateNormals.cpp.o
+[ 84%] Building CXX object src/Magnum/MeshTools/CMakeFiles/MagnumMeshTools.dir/Interleave.cpp.o
+[ 85%] Building CXX object src/Magnum/MeshTools/CMakeFiles/MagnumMeshTools.dir/Reference.cpp.o
+[ 85%] Building CXX object src/Magnum/MeshTools/CMakeFiles/MagnumMeshTools.dir/RemoveDuplicates.cpp.o
+[ 86%] Building CXX object src/Magnum/MeshTools/CMakeFiles/MagnumMeshTools.dir/Transform.cpp.o
+[ 86%] Built target MagnumSceneTools
+[ 86%] Building CXX object src/Magnum/MeshTools/CMakeFiles/MagnumMeshTools.dir/CombineIndexedArrays.cpp.o
+[ 87%] Building CXX object src/Magnum/MeshTools/CMakeFiles/MagnumMeshTools.dir/Compile.cpp.o
+[ 88%] Linking CXX static library ../../../lib/MagnumMeshTools.bc
+[ 88%] Built target MagnumMeshTools
+Scanning dependencies of target MagnumPrimitives
+[ 89%] Building CXX object src/Magnum/Primitives/CMakeFiles/MagnumPrimitives.dir/Axis.cpp.o
+[ 90%] Building CXX object src/Magnum/Primitives/CMakeFiles/MagnumPrimitives.dir/Capsule.cpp.o
+[ 90%] Building CXX object src/Magnum/Primitives/CMakeFiles/MagnumPrimitives.dir/Circle.cpp.o
+[ 91%] Building CXX object src/Magnum/Primitives/CMakeFiles/MagnumPrimitives.dir/Crosshair.cpp.o
+[ 91%] Building CXX object src/Magnum/Primitives/CMakeFiles/MagnumPrimitives.dir/Cone.cpp.o
+[ 91%] Building CXX object src/Magnum/Primitives/CMakeFiles/MagnumPrimitives.dir/Cylinder.cpp.o
+[ 93%] Building CXX object src/Magnum/Primitives/CMakeFiles/MagnumPrimitives.dir/Gradient.cpp.o
+[ 93%] Building CXX object src/Magnum/Primitives/CMakeFiles/MagnumPrimitives.dir/Cube.cpp.o
+[ 94%] Building CXX object src/Magnum/Primitives/CMakeFiles/MagnumPrimitives.dir/Grid.cpp.o
+[ 94%] Building CXX object src/Magnum/Primitives/CMakeFiles/MagnumPrimitives.dir/Icosphere.cpp.o
+[ 94%] Building CXX object src/Magnum/Primitives/CMakeFiles/MagnumPrimitives.dir/Plane.cpp.o
+[ 95%] Building CXX object src/Magnum/Primitives/CMakeFiles/MagnumPrimitives.dir/Line.cpp.o
+[ 96%] Building CXX object src/Magnum/Primitives/CMakeFiles/MagnumPrimitives.dir/Square.cpp.o
+[ 97%] Building CXX object src/Magnum/Primitives/CMakeFiles/MagnumPrimitives.dir/UVSphere.cpp.o
+[ 97%] Building CXX object src/Magnum/Primitives/CMakeFiles/MagnumPrimitives.dir/Implementation/Spheroid.cpp.o
+[ 98%] Building CXX object src/Magnum/Primitives/CMakeFiles/MagnumPrimitives.dir/Implementation/WireframeSpheroid.cpp.o
+[ 99%] Linking CXX static library ../../../lib/MagnumPrimitives.bc
+[ 99%] Built target MagnumPrimitives
+Scanning dependencies of target MagnumDebugTools
+[ 99%] Building CXX object src/Magnum/DebugTools/CMakeFiles/MagnumDebugTools.dir/FrameProfiler.cpp.o
+[100%] Building CXX object src/Magnum/DebugTools/CMakeFiles/MagnumDebugTools.dir/CompareImage.cpp.o
+[100%] Linking CXX static library ../../../lib/MagnumDebugTools.bc
+[100%] Built target MagnumDebugTools
+[91m+ make install
+[0m[  3%] Built target MagnumMathObjects
+[  7%] Built target MagnumObjects
+[ 13%] Built target Magnum
+[ 17%] Built target MagnumTradeObjects
+[ 29%] Built target MagnumTrade
+[ 34%] Built target MagnumDebugToolsObjects
+[ 49%] Built target MagnumGLObjects
+[ 56%] Built target MagnumGL
+[ 57%] Built target MagnumMeshToolsObjects
+[ 67%] Built target MagnumMeshTools
+[ 78%] Built target MagnumPrimitives
+[ 78%] Built target MagnumSceneGraphObjects
+[ 79%] Built target MagnumSceneGraph
+[ 79%] Built target MagnumShaders_RESOURCES_GL-dependencies
+[ 80%] Built target MagnumShadersObjects
+[ 85%] Built target MagnumShaders
+[ 86%] Built target MagnumDebugTools
+[ 86%] Built target MagnumMaterialToolsObjects
+[ 88%] Built target MagnumMaterialTools
+[ 90%] Built target MagnumSceneTools
+[ 92%] Built target MagnumShaderTools
+[ 92%] Built target MagnumTextureTools_RESOURCES-dependencies
+[ 96%] Built target MagnumTextureTools
+[ 97%] Built target MagnumTextObjects
+[100%] Built target MagnumText
+Install the project...
+-- Install configuration: ""
+-- Installing: /app/install_emscripten/share/cmake/Magnum/FindMagnum.cmake
+-- Installing: /app/install_emscripten/share/cmake/Magnum/MagnumConfig.cmake
+-- Installing: /app/install_emscripten/include/MagnumExternal/OpenGL/KHR/khrplatform.h
+-- Installing: /app/install_emscripten/include/MagnumExternal/OpenGL/GLES2/flextGLEmscripten.h
+-- Installing: /app/install_emscripten/lib/Magnum.bc
+-- Installing: /app/install_emscripten/include/Magnum/AbstractResourceLoader.h
+-- Installing: /app/install_emscripten/include/Magnum/British.h
+-- Installing: /app/install_emscripten/include/Magnum/DimensionTraits.h
+-- Installing: /app/install_emscripten/include/Magnum/FileCallback.h
+-- Installing: /app/install_emscripten/include/Magnum/Image.h
+-- Installing: /app/install_emscripten/include/Magnum/ImageFlags.h
+-- Installing: /app/install_emscripten/include/Magnum/ImageView.h
+-- Installing: /app/install_emscripten/include/Magnum/Magnum.h
+-- Installing: /app/install_emscripten/include/Magnum/Mesh.h
+-- Installing: /app/install_emscripten/include/Magnum/PixelFormat.h
+-- Installing: /app/install_emscripten/include/Magnum/PixelStorage.h
+-- Installing: /app/install_emscripten/include/Magnum/Resource.h
+-- Installing: /app/install_emscripten/include/Magnum/ResourceManager.h
+-- Installing: /app/install_emscripten/include/Magnum/Sampler.h
+-- Installing: /app/install_emscripten/include/Magnum/Tags.h
+-- Installing: /app/install_emscripten/include/Magnum/Timeline.h
+-- Installing: /app/install_emscripten/include/Magnum/Types.h
+-- Installing: /app/install_emscripten/include/Magnum/VertexFormat.h
+-- Installing: /app/install_emscripten/include/Magnum/visibility.h
+-- Installing: /app/install_emscripten/include/Magnum/Array.h
+-- Installing: /app/install_emscripten/include/Magnum/configure.h
+-- Installing: /app/install_emscripten/include/Magnum/version.h
+-- Installing: /app/install_emscripten/include/Magnum/Animation/Animation.h
+-- Installing: /app/install_emscripten/include/Magnum/Animation/Easing.h
+-- Installing: /app/install_emscripten/include/Magnum/Animation/Interpolation.h
+-- Installing: /app/install_emscripten/include/Magnum/Animation/Player.h
+-- Installing: /app/install_emscripten/include/Magnum/Animation/Player.hpp
+-- Installing: /app/install_emscripten/include/Magnum/Animation/Track.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Angle.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Bezier.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/BitVector.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Color.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Complex.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Constants.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/ConfigurationValue.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/CubicHermite.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Distance.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Dual.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/DualComplex.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/DualQuaternion.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Frustum.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Functions.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/FunctionsBatch.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Half.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Intersection.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Math.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/TypeTraits.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Matrix.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Matrix3.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Matrix4.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Quaternion.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Packing.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/PackingBatch.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Range.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/RectangularMatrix.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/StrictWeakOrdering.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Swizzle.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Tags.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Unit.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Vector.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Vector2.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Vector3.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Vector4.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/BoolVector.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Algorithms/GaussJordan.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Algorithms/GramSchmidt.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Algorithms/KahanSum.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Algorithms/Qr.h
+-- Installing: /app/install_emscripten/include/Magnum/Math/Algorithms/Svd.h
+-- Installing: /app/install_emscripten/include/Magnum/Platform/GLContext.h
+-- Installing: /app/install_emscripten/include/Magnum/Platform/Platform.h
+-- Installing: /app/install_emscripten/include/Magnum/Platform/Screen.h
+-- Installing: /app/install_emscripten/include/Magnum/Platform/ScreenedApplication.h
+-- Installing: /app/install_emscripten/include/Magnum/Platform/ScreenedApplication.hpp
+-- Installing: /app/install_emscripten/share/magnum/EmscriptenApplication.js
+-- Installing: /app/install_emscripten/share/magnum/WindowlessEmscriptenApplication.js
+-- Installing: /app/install_emscripten/share/magnum/WebApplication.css
+-- Installing: /app/install_emscripten/lib/MagnumDebugTools.bc
+-- Installing: /app/install_emscripten/include/Magnum/DebugTools/ColorMap.h
+-- Installing: /app/install_emscripten/include/Magnum/DebugTools/DebugTools.h
+-- Installing: /app/install_emscripten/include/Magnum/DebugTools/FrameProfiler.h
+-- Installing: /app/install_emscripten/include/Magnum/DebugTools/visibility.h
+-- Installing: /app/install_emscripten/include/Magnum/DebugTools/Profiler.h
+-- Installing: /app/install_emscripten/include/Magnum/DebugTools/ResourceManager.h
+-- Installing: /app/install_emscripten/include/Magnum/DebugTools/Screenshot.h
+-- Installing: /app/install_emscripten/include/Magnum/DebugTools/TextureImage.h
+-- Installing: /app/install_emscripten/include/Magnum/DebugTools/ForceRenderer.h
+-- Installing: /app/install_emscripten/include/Magnum/DebugTools/ObjectRenderer.h
+-- Installing: /app/install_emscripten/include/Magnum/DebugTools/CompareImage.h
+-- Installing: /app/install_emscripten/include/Magnum/DebugTools/CompareMaterial.h
+-- Installing: /app/install_emscripten/lib/MagnumGL.bc
+-- Installing: /app/install_emscripten/include/Magnum/GL/AbstractFramebuffer.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/AbstractObject.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/AbstractQuery.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/AbstractShaderProgram.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/AbstractTexture.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/Attribute.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/Buffer.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/Context.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/CubeMapTexture.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/DefaultFramebuffer.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/Extensions.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/Framebuffer.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/GL.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/Mesh.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/MeshView.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/OpenGL.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/PixelFormat.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/Renderbuffer.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/RenderbufferFormat.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/Renderer.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/Sampler.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/Shader.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/Texture.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/TextureFormat.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/TimeQuery.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/Version.h
+-- Installing: /app/install_emscripten/include/Magnum/GL/visibility.h
+-- Installing: /app/install_emscripten/lib/MagnumMaterialTools.bc
+-- Installing: /app/install_emscripten/include/Magnum/MaterialTools/PhongToPbrMetallicRoughness.h
+-- Installing: /app/install_emscripten/include/Magnum/MaterialTools/visibility.h
+-- Installing: /app/install_emscripten/lib/MagnumMeshTools.bc
+-- Installing: /app/install_emscripten/include/Magnum/MeshTools/BoundingVolume.h
+-- Installing: /app/install_emscripten/include/Magnum/MeshTools/Combine.h
+-- Installing: /app/install_emscripten/include/Magnum/MeshTools/CompressIndices.h
+-- Installing: /app/install_emscripten/include/Magnum/MeshTools/Concatenate.h
+-- Installing: /app/install_emscripten/include/Magnum/MeshTools/Duplicate.h
+-- Installing: /app/install_emscripten/include/Magnum/MeshTools/FilterAttributes.h
+-- Installing: /app/install_emscripten/include/Magnum/MeshTools/FlipNormals.h
+-- Installing: /app/install_emscripten/include/Magnum/MeshTools/GenerateIndices.h
+-- Installing: /app/install_emscripten/include/Magnum/MeshTools/GenerateNormals.h
+-- Installing: /app/install_emscripten/include/Magnum/MeshTools/Interleave.h
+-- Installing: /app/install_emscripten/include/Magnum/MeshTools/InterleaveFlags.h
+-- Installing: /app/install_emscripten/include/Magnum/MeshTools/Reference.h
+-- Installing: /app/install_emscripten/include/Magnum/MeshTools/RemoveDuplicates.h
+-- Installing: /app/install_emscripten/include/Magnum/MeshTools/Subdivide.h
+-- Installing: /app/install_emscripten/include/Magnum/MeshTools/Tipsify.h
+-- Installing: /app/install_emscripten/include/Magnum/MeshTools/Transform.h
+-- Installing: /app/install_emscripten/include/Magnum/MeshTools/visibility.h
+-- Installing: /app/install_emscripten/include/Magnum/MeshTools/CombineIndexedArrays.h
+-- Installing: /app/install_emscripten/include/Magnum/MeshTools/GenerateFlatNormals.h
+-- Installing: /app/install_emscripten/include/Magnum/MeshTools/Compile.h
+-- Installing: /app/install_emscripten/include/Magnum/MeshTools/FullScreenTriangle.h
+-- Installing: /app/install_emscripten/lib/MagnumPrimitives.bc
+-- Installing: /app/install_emscripten/include/Magnum/Primitives/Axis.h
+-- Installing: /app/install_emscripten/include/Magnum/Primitives/Capsule.h
+-- Installing: /app/install_emscripten/include/Magnum/Primitives/Circle.h
+-- Installing: /app/install_emscripten/include/Magnum/Primitives/Crosshair.h
+-- Installing: /app/install_emscripten/include/Magnum/Primitives/Cone.h
+-- Installing: /app/install_emscripten/include/Magnum/Primitives/Cube.h
+-- Installing: /app/install_emscripten/include/Magnum/Primitives/Cylinder.h
+-- Installing: /app/install_emscripten/include/Magnum/Primitives/Gradient.h
+-- Installing: /app/install_emscripten/include/Magnum/Primitives/Grid.h
+-- Installing: /app/install_emscripten/include/Magnum/Primitives/Icosphere.h
+-- Installing: /app/install_emscripten/include/Magnum/Primitives/Line.h
+-- Installing: /app/install_emscripten/include/Magnum/Primitives/Plane.h
+-- Installing: /app/install_emscripten/include/Magnum/Primitives/Square.h
+-- Installing: /app/install_emscripten/include/Magnum/Primitives/UVSphere.h
+-- Installing: /app/install_emscripten/include/Magnum/Primitives/visibility.h
+-- Installing: /app/install_emscripten/lib/MagnumSceneGraph.bc
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/AbstractFeature.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/AbstractFeature.hpp
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/AbstractGroupedFeature.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/AbstractObject.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/AbstractTransformation.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/AbstractTranslation.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/AbstractTranslationRotation2D.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/AbstractTranslationRotation3D.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/AbstractTranslationRotationScaling2D.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/AbstractTranslationRotationScaling3D.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/Animable.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/Animable.hpp
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/AnimableGroup.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/Camera.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/Camera.hpp
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/Drawable.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/Drawable.hpp
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/DualComplexTransformation.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/DualQuaternionTransformation.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/RigidMatrixTransformation2D.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/RigidMatrixTransformation2D.hpp
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/RigidMatrixTransformation3D.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/RigidMatrixTransformation3D.hpp
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/FeatureGroup.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/FeatureGroup.hpp
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/MatrixTransformation2D.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/MatrixTransformation2D.hpp
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/MatrixTransformation3D.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/MatrixTransformation3D.hpp
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/Object.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/Object.hpp
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/Scene.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/SceneGraph.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/TranslationTransformation.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/TranslationRotationScalingTransformation2D.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/TranslationRotationScalingTransformation3D.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneGraph/visibility.h
+-- Installing: /app/install_emscripten/lib/MagnumSceneTools.bc
+-- Installing: /app/install_emscripten/include/Magnum/SceneTools/FlattenMeshHierarchy.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneTools/OrderClusterParents.h
+-- Installing: /app/install_emscripten/include/Magnum/SceneTools/visibility.h
+-- Installing: /app/install_emscripten/lib/MagnumShaders.bc
+-- Installing: /app/install_emscripten/include/Magnum/Shaders/DistanceFieldVector.h
+-- Installing: /app/install_emscripten/include/Magnum/Shaders/DistanceFieldVectorGL.h
+-- Installing: /app/install_emscripten/include/Magnum/Shaders/Flat.h
+-- Installing: /app/install_emscripten/include/Magnum/Shaders/FlatGL.h
+-- Installing: /app/install_emscripten/include/Magnum/Shaders/Generic.h
+-- Installing: /app/install_emscripten/include/Magnum/Shaders/GenericGL.h
+-- Installing: /app/install_emscripten/include/Magnum/Shaders/MeshVisualizer.h
+-- Installing: /app/install_emscripten/include/Magnum/Shaders/MeshVisualizerGL.h
+-- Installing: /app/install_emscripten/include/Magnum/Shaders/Phong.h
+-- Installing: /app/install_emscripten/include/Magnum/Shaders/PhongGL.h
+-- Installing: /app/install_emscripten/include/Magnum/Shaders/Shaders.h
+-- Installing: /app/install_emscripten/include/Magnum/Shaders/Vector.h
+-- Installing: /app/install_emscripten/include/Magnum/Shaders/VectorGL.h
+-- Installing: /app/install_emscripten/include/Magnum/Shaders/VertexColorGL.h
+-- Installing: /app/install_emscripten/include/Magnum/Shaders/glShaderWrapper.h
+-- Installing: /app/install_emscripten/include/Magnum/Shaders/visibility.h
+-- Installing: /app/install_emscripten/include/Magnum/Shaders/VertexColor.h
+-- Installing: /app/install_emscripten/lib/MagnumShaderTools.bc
+-- Installing: /app/install_emscripten/include/Magnum/ShaderTools/AbstractConverter.h
+-- Installing: /app/install_emscripten/include/Magnum/ShaderTools/ShaderTools.h
+-- Installing: /app/install_emscripten/include/Magnum/ShaderTools/Stage.h
+-- Installing: /app/install_emscripten/include/Magnum/ShaderTools/visibility.h
+-- Installing: /app/install_emscripten/lib/MagnumText.bc
+-- Installing: /app/install_emscripten/include/Magnum/Text/AbstractFont.h
+-- Installing: /app/install_emscripten/include/Magnum/Text/AbstractFontConverter.h
+-- Installing: /app/install_emscripten/include/Magnum/Text/AbstractGlyphCache.h
+-- Installing: /app/install_emscripten/include/Magnum/Text/Alignment.h
+-- Installing: /app/install_emscripten/include/Magnum/Text/Text.h
+-- Installing: /app/install_emscripten/include/Magnum/Text/visibility.h
+-- Installing: /app/install_emscripten/include/Magnum/Text/DistanceFieldGlyphCache.h
+-- Installing: /app/install_emscripten/include/Magnum/Text/GlyphCache.h
+-- Installing: /app/install_emscripten/include/Magnum/Text/Renderer.h
+-- Installing: /app/install_emscripten/lib/MagnumTextureTools.bc
+-- Installing: /app/install_emscripten/include/Magnum/TextureTools/Atlas.h
+-- Installing: /app/install_emscripten/include/Magnum/TextureTools/visibility.h
+-- Installing: /app/install_emscripten/include/Magnum/TextureTools/DistanceField.h
+-- Installing: /app/install_emscripten/lib/MagnumTrade.bc
+-- Installing: /app/install_emscripten/include/Magnum/Trade/AbstractImporter.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/AbstractImageConverter.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/AbstractSceneConverter.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/AnimationData.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/ArrayAllocator.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/CameraData.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/Data.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/FlatMaterialData.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/ImageData.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/LightData.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/MaterialData.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/MaterialLayerData.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/MeshData.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/PbrClearCoatMaterialData.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/PbrMetallicRoughnessMaterialData.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/PbrSpecularGlossinessMaterialData.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/PhongMaterialData.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/SceneData.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/SkinData.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/TextureData.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/Trade.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/visibility.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/AbstractMaterialData.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/MeshData2D.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/MeshData3D.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/MeshObjectData2D.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/MeshObjectData3D.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/ObjectData2D.h
+-- Installing: /app/install_emscripten/include/Magnum/Trade/ObjectData3D.h
+Removing intermediate container 843959c04fe3
+ ---> 6372cf983811
+Step 35/39 : ADD ./_build_pybind11.sh .
+ ---> 4e1cab074df1
+Step 36/39 : RUN ./_build_pybind11.sh
+ ---> Running in 439d81b87744
+[91m++ dirname ./_build_pybind11.sh
+[0m[91m+ cd .
++ cd lib/pybind11
+[0m[91m+ rm -rf build
+[0m[91m+ mkdir build
+[0m[91m+ cd build
+[0m[91m+ cmake .. -DCMAKE_TOOLCHAIN_FILE=/app/lib/toolchains/generic/Emscripten-wasm.cmake -DCMAKE_CROSSCOMPILING=ON -DPYBIND11_TEST= '-DCMAKE_PREFIX_PATH=/app/install_emscripten;/usr/local;/usr/share;/usr/lib' -DCMAKE_FIND_ROOT_PATH=/app/install_emscripten -DCMAKE_INSTALL_PREFIX=/app/install_emscripten
+[0m-- The CXX compiler identification is Clang 11.0.1
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/em++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+[91mCMake Warning (dev) at /usr/share/cmake-3.18/Modules/GNUInstallDirs.cmake:225 (message):
+  Unable to determine default CMAKE_INSTALL_LIBDIR directory because no
+  target architecture is known.  Please enable at least one language before
+  including GNUInstallDirs.
+Call Stack (most recent call first):
+  CMakeLists.txt:45 (include)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+[0m-- pybind11 v2.11.0 dev1
+-- CMake 3.18.4
+-- Found PythonInterp: /usr/local/bin/python3 (found suitable version "3.11.1", minimum required is "3.6") 
+-- Found PythonLibs: python3.11
+-- PYTHON 3.11.1
+-- Performing Test HAS_FLTO
+-- Performing Test HAS_FLTO - Success
+-- pybind11::lto enabled
+-- Performing Test HAS_FLTO_THIN
+-- Performing Test HAS_FLTO_THIN - Success
+-- pybind11::thin_lto enabled
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /app/lib/pybind11/build
+[91m+ make -j8
+[0m[91m+ make install
+[0mInstall the project...
+-- Install configuration: ""
+-- Installing: /app/install_emscripten/include/pybind11
+-- Installing: /app/install_emscripten/include/pybind11/detail
+-- Installing: /app/install_emscripten/include/pybind11/detail/init.h
+-- Installing: /app/install_emscripten/include/pybind11/detail/class.h
+-- Installing: /app/install_emscripten/include/pybind11/detail/descr.h
+-- Installing: /app/install_emscripten/include/pybind11/detail/common.h
+-- Installing: /app/install_emscripten/include/pybind11/detail/typeid.h
+-- Installing: /app/install_emscripten/include/pybind11/detail/type_caster_base.h
+-- Installing: /app/install_emscripten/include/pybind11/detail/internals.h
+-- Installing: /app/install_emscripten/include/pybind11/numpy.h
+-- Installing: /app/install_emscripten/include/pybind11/eigen
+-- Installing: /app/install_emscripten/include/pybind11/eigen/matrix.h
+-- Installing: /app/install_emscripten/include/pybind11/eigen/tensor.h
+-- Installing: /app/install_emscripten/include/pybind11/pytypes.h
+-- Installing: /app/install_emscripten/include/pybind11/complex.h
+-- Installing: /app/install_emscripten/include/pybind11/stl.h
+-- Installing: /app/install_emscripten/include/pybind11/gil.h
+-- Installing: /app/install_emscripten/include/pybind11/buffer_info.h
+-- Installing: /app/install_emscripten/include/pybind11/cast.h
+-- Installing: /app/install_emscripten/include/pybind11/operators.h
+-- Installing: /app/install_emscripten/include/pybind11/stl_bind.h
+-- Installing: /app/install_emscripten/include/pybind11/stl
+-- Installing: /app/install_emscripten/include/pybind11/stl/filesystem.h
+-- Installing: /app/install_emscripten/include/pybind11/functional.h
+-- Installing: /app/install_emscripten/include/pybind11/iostream.h
+-- Installing: /app/install_emscripten/include/pybind11/embed.h
+-- Installing: /app/install_emscripten/include/pybind11/common.h
+-- Installing: /app/install_emscripten/include/pybind11/eigen.h
+-- Installing: /app/install_emscripten/include/pybind11/options.h
+-- Installing: /app/install_emscripten/include/pybind11/chrono.h
+-- Installing: /app/install_emscripten/include/pybind11/eval.h
+-- Installing: /app/install_emscripten/include/pybind11/pybind11.h
+-- Installing: /app/install_emscripten/include/pybind11/attr.h
+-- Installing: /app/install_emscripten/share/cmake/pybind11/pybind11Config.cmake
+-- Installing: /app/install_emscripten/share/cmake/pybind11/pybind11ConfigVersion.cmake
+-- Installing: /app/install_emscripten/share/cmake/pybind11/FindPythonLibsNew.cmake
+-- Installing: /app/install_emscripten/share/cmake/pybind11/pybind11Common.cmake
+-- Installing: /app/install_emscripten/share/cmake/pybind11/pybind11Tools.cmake
+-- Installing: /app/install_emscripten/share/cmake/pybind11/pybind11NewTools.cmake
+-- Installing: /app/install_emscripten/share/cmake/pybind11/pybind11Targets.cmake
+-- Installing: /app/install_emscripten/share/pkgconfig/pybind11.pc
+Removing intermediate container 439d81b87744
+ ---> 54709ba80908
+Step 37/39 : ADD ./_build_magnum_bindings.sh .
+ ---> 606ae6da02e2
+Step 38/39 : RUN ./_build_magnum_bindings.sh || true
+ ---> Running in 3fa185c88470
+[91m++ dirname ./_build_magnum_bindings.sh
+[0m[91m+ cd .
++ cd lib/magnum-bindings
+[0m[91m+ rm -rf build
+[0m[91m+ mkdir build
+[0m[91m+ cd build
+[0m[91m+ cmake .. -DCMAKE_TOOLCHAIN_FILE=/app/lib/toolchains/generic/Emscripten-wasm.cmake -DMAGNUM_WITH_PYTHON=ON -DMAGNUM_BUILD_STATIC=ON -DCMAKE_CROSSCOMPILING=ON '-DCMAKE_PREFIX_PATH=/app/install_emscripten;/usr/local;/usr' -DCMAKE_FIND_ROOT_PATH=/app/install_emscripten -DCMAKE_INSTALL_PREFIX=/app/install_emscripten
+[0m-- The CXX compiler identification is Clang 11.0.1
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/em++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found Corrade: /app/install_emscripten/include  found components: Containers rc Utility 
+-- Found Magnum: /app/install_emscripten/include   
+-- The LIB_SUFFIX variable is not defined. It will be autodetected now.
+-- You can set it manually with -DLIB_SUFFIX=<value> (64 for example).
+-- LIB_SUFFIX autodetected as '', libraries will be installed into /app/install_emscripten/lib
+-- Found Git: /usr/bin/git (found version "2.30.2") 
+[91mCMake Warning at src/Magnum/CMakeLists.txt:64 (message):
+  Can't match Git version: fatal: not a git repository:
+  /app/lib/magnum-bindings/../../.git/modules/magnum-bindings
+
+
+
+[0m-- Found OpenGLES2: GL  
+-- Found Magnum: /app/install_emscripten/include  found components: GL SceneGraph 
+-- Found PythonInterp: /usr/local/bin/python3 (found suitable version "3.11.1", minimum required is "3.6") 
+-- Found PythonLibs: python3.11
+-- Performing Test HAS_FLTO
+-- Performing Test HAS_FLTO - Success
+-- Performing Test HAS_FLTO_THIN
+-- Performing Test HAS_FLTO_THIN - Success
+-- Found pybind11: /app/install_emscripten/include (found version "2.11.0dev1")
+-- Found Corrade: /app/install_emscripten/include  found components: Containers rc Utility PluginManager 
+-- Could NOT find SDL2 (missing: SDL2_INCLUDE_DIR) 
+-- Could NOT find EGL (missing: EGL_INCLUDE_DIR) 
+-- Could NOT find Magnum (missing: GlfwApplication Sdl2Application) 
+    Reason given by package: GlfwApplication is not a known component on this platform. Sdl2Application is not built by default. Make sure you enabled MAGNUM_WITH_SDL2APPLICATION when building Magnum.
+
+-- Found Corrade: /app/install_emscripten/include  found components: Containers rc Utility 
+-- Could NOT find EGL (missing: EGL_INCLUDE_DIR) 
+-- Could NOT find Magnum (missing: WindowlessEglApplication) 
+    Reason given by package: WindowlessEglApplication is not built by default. Make sure you enabled MAGNUM_WITH_WINDOWLESSEGLAPPLICATION when building Magnum.
+
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /app/lib/magnum-bindings/build
+[91m+ make -j8
+[0mScanning dependencies of target corrade
+[  9%] Building CXX object src/python/corrade/CMakeFiles/corrade.dir/containers.cpp.o
+[  9%] Building CXX object src/python/corrade/CMakeFiles/corrade.dir/corrade.cpp.o
+[ 14%] Building CXX object src/python/corrade/CMakeFiles/corrade.dir/pluginmanager.cpp.o
+Scanning dependencies of target magnum
+[ 28%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/math.cpp.o
+[ 28%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/math.matrixfloat.cpp.o
+[ 28%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/magnum.cpp.o
+[ 33%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/math.range.cpp.o
+[ 38%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/math.matrixdouble.cpp.o
+[91mIn file included from /app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:26:
+In file included from /app/install_emscripten/include/pybind11/pybind11.h:13:
+In file included from /app/install_emscripten/include/pybind11/detail/class.h:12:
+In file included from /app/install_emscripten/include/pybind11/detail/../attr.h:13:
+In file included from /app/install_emscripten/include/pybind11/detail/common.h:266:
+In file included from /usr/local/include/python3.11/Python.h:38:
+/usr/local/include/python3.11/pyport.h:601:2: error: "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)."
+#error "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)."
+ ^
+[0m[91mIn file included from /app/lib/magnum-bindings/src/python/corrade/containers.cpp:26:
+In file included from /app/install_emscripten/include/pybind11/pybind11.h:13:
+In file included from /app/install_emscripten/include/pybind11/detail/class.h:12:
+In file included from /app/install_emscripten/include/pybind11/detail/../attr.h:13:
+In file included from /app/install_emscripten/include/pybind11/detail/common.h:266:
+In file included from /usr/local/include/python3.11/Python.h:38:
+/usr/local/include/python3.11/pyport.h:601:2: error: "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)."
+[0m[91m#error "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)."
+ ^
+[0m[91mIn file included from /app/lib/magnum-bindings/src/python/magnum/math.matrixfloat.cpp:26:
+In file included from /app/lib/magnum-bindings/src/python/magnum/math.matrix.h:28:
+In file included from /app/install_emscripten/include/pybind11/pybind11.h:13:
+In file included from /app/install_emscripten/include/pybind11/detail/class.h:12:
+In file included from /app/install_emscripten/include/pybind11/detail/../attr.h:13:
+In file included from /app/install_emscripten/include/pybind11/detail/common.h:266:
+In file included from /usr/local/include/python3.11/Python.h:38:
+/usr/local/include/python3.11/pyport.h:601:2: error: "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)."
+#error "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)."
+ ^
+[0m[91mIn file included from /app/lib/magnum-bindings/src/python/magnum/magnum.cpp:26:
+In file included from /app/install_emscripten/include/pybind11/operators.h:12:
+In file included from /app/install_emscripten/include/pybind11/pybind11.h:13:
+In file included from /app/install_emscripten/include/pybind11/detail/class.h:12:
+In file included from /app/install_emscripten/include/pybind11/detail/../attr.h:13:
+In file included from /app/install_emscripten/include/pybind11/detail/common.h:266:
+In file included from /usr/local/include/python3.11/Python.h:38:
+/usr/local/include/python3.11/pyport.h:601:2: error: "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)."
+#error "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)."
+ ^
+[0m[91mIn file included from /app/lib/magnum-bindings/src/python/magnum/math.range.cpp:26:
+In file included from /app/install_emscripten/include/pybind11/pybind11.h:13:
+In file included from /app/install_emscripten/include/pybind11/detail/class.h:12:
+In file included from /app/install_emscripten/include/pybind11/detail/../attr.h:13:
+In file included from /app/install_emscripten/include/pybind11/detail/common.h:266:
+In file included from /usr/local/include/python3.11/Python.h:38:
+/usr/local/include/python3.11/pyport.h:601:2: error: "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)."
+#error "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)."
+ ^
+[0m[91mIn file included from /app/lib/magnum-bindings/src/python/magnum/math.matrixdouble.cpp:26:
+In file included from /app/lib/magnum-bindings/src/python/magnum/math.matrix.h:28:
+In file included from /app/install_emscripten/include/pybind11/pybind11.h:13:
+In file included from /app/install_emscripten/include/pybind11/detail/class.h:12:
+In file included from /app/install_emscripten/include/pybind11/detail/../attr.h:13:
+In file included from /app/install_emscripten/include/pybind11/detail/common.h:266:
+In file included from /usr/local/include/python3.11/Python.h:38:
+/usr/local/include/python3.11/pyport.h:601:2: error: "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)."
+#error "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)."
+ ^
+[0m[91mIn file included from /app/lib/magnum-bindings/src/python/corrade/corrade.cpp:26:
+In file included from /app/install_emscripten/include/pybind11/pybind11.h:13:
+In file included from /app/install_emscripten/include/pybind11/detail/class.h:12:
+In file included from /app/install_emscripten/include/pybind11/detail/../attr.h:13:
+In file included from /app/install_emscripten/include/pybind11/detail/common.h:266:
+In file included from /usr/local/include/python3.11/Python.h:38:
+/usr/local/include/python3.11/pyport.h:601:2: error: "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)."
+#error "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)."
+ ^
+[0m[91mIn file included from /app/lib/magnum-bindings/src/python/magnum/math.cpp:27:
+In file included from /app/install_emscripten/include/pybind11/pybind11.h:13:
+In file included from /app/install_emscripten/include/pybind11/detail/class.h:12:
+In file included from /app/install_emscripten/include/pybind11/detail/../attr.h:13:
+In file included from /app/install_emscripten/include/pybind11/detail/common.h:266:
+In file included from /usr/local/include/python3.11/Python.h:38:
+/usr/local/include/python3.11/pyport.h:601:2: error: "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)."
+#error "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)."
+ ^
+[0m[91m/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:45:66: error: no member named 'WrongPluginVersion' in 'Corrade::PluginManager::LoadState'
+        .value("WRONG_PLUGIN_VERSION", PluginManager::LoadState::WrongPluginVersion)
+                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:46:69: error: no member named 'WrongInterfaceVersion' in 'Corrade::PluginManager::LoadState'
+        .value("WRONG_INTERFACE_VERSION", PluginManager::LoadState::WrongInterfaceVersion)
+                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:47:65: error: no member named 'WrongMetadataFile' in 'Corrade::PluginManager::LoadState'
+        .value("WRONG_METADATA_FILE", PluginManager::LoadState::WrongMetadataFile)
+                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:48:67: error: no member named 'UnresolvedDependency' in 'Corrade::PluginManager::LoadState'
+        .value("UNRESOLVED_DEPENDENCY", PluginManager::LoadState::UnresolvedDependency)
+                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:51:56: error: no member named 'NotLoaded' in 'Corrade::PluginManager::LoadState'
+        .value("NOT_LOADED", PluginManager::LoadState::NotLoaded)
+                             ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:52:59: error: no member named 'UnloadFailed' in 'Corrade::PluginManager::LoadState'
+        .value("UNLOAD_FAILED", PluginManager::LoadState::UnloadFailed)
+                                ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:53[0m[91m:54: error: no member named 'Required' in 'Corrade::PluginManager::LoadState'
+        .value("REQUIRED", PluginManager::LoadState::Required)
+                           ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:54:50: error: no member named 'Used' in 'Corrade::PluginManager::LoadState'
+        .value("USED", PluginManager::LoadState::Used);
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+[0m[91m/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:67:41: error: no member named 'pluginDirectory' in 'Corrade::PluginManager::AbstractManager'
+                return std::string{self.pluginDirectory()};
+                                   ~~~~ ^
+[0m[91m/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:69:22: error: no member named 'setPluginDirectory' in 'Corrade::PluginManager::AbstractManager'
+                self.setPluginDirectory(directory);
+                ~~~~ ^
+[0m[91m/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:107:51: error: no member named 'NotLoaded' in 'Corrade::PluginManager::LoadState'; did you mean 'Loaded'?
+            if(state != PluginManager::LoadState::NotLoaded && state != PluginManager::LoadState::Static) {
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+                                                  Loaded
+/app/install_emscripten/include/Corrade/PluginManager/AbstractManager.h:136:5: note: 'Loaded' declared here
+    Loaded = LoadState::Static,
+    ^
+[0m[91m/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:71:74: error: no member named 'reloadPluginDirectory' in 'Corrade::PluginManager::AbstractManager'
+        .def("reload_plugin_directory", &PluginManager::AbstractManager::reloadPluginDirectory, "Reload plugin directory")
+                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+[0m[91m/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:62:32: error: variable 'self' cannot be implicitly captured in a lambda with no capture-default specified
+            return std::string{self.pluginInterface()};
+                               ^
+/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:87: note: 'self' declared here
+[0m[91m        .def_property_readonly("plugin_interface", [](PluginManager::AbstractManager& self) {
+                                                                                      ^
+/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:52: note: lambda expression begins here
+[0m[91m        .def_property_readonly("plugin_interface", [](PluginManager::AbstractManager& self) {
+                                                   ^
+[0m[91m/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:87: warning: unused parameter 'self' [-Wunused-parameter]
+        .def_property_readonly("plugin_interface", [](PluginManager::AbstractManager& self) {
+                                                                                      ^
+[0m[91m/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:52: error: no viable conversion from '(lambda at /app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:52)' to 'const (lambda at /app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:52)'
+        .def_property_readonly("plugin_interface", [](PluginManager::AbstractManager& self) {
+                                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:52: note: candidate constructor (the implicit copy constructor) not viable: no known conversion from '(lambda at /app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:52)' to 'const (lambda at /app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:52) &' for 1st argument
+        .def_property_readonly("plugin_interface", [](PluginManager::AbstractManager& self) {
+                                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[0m[91m/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:52: note: candidate constructor (the implicit move constructor) not viable: no known conversion from '(lambda at /app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:52)' to '(lambda at /app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:52) &&' for 1st argument
+        .def_property_readonly("plugin_interface", [](PluginManager::AbstractManager& self) {
+                                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[0m[91m/app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp:60:52: note: candidate function
+/app/install_emscripten/include/pybind11/pybind11.h:1698:67: note: passing argument to parameter 'fget' here
+[0m[91m    class_ &def_property_readonly(const char *name, const Getter &fget, const Extra &...extra) {
+                                                                  ^
+[0m[91m1 warning and 15 errors generated.
+[0m[91mem++: error: '/usr/bin/clang++ -DEMSCRIPTEN -fignore-exceptions -flto=full -Xclang -isystem/usr/share/emscripten/system/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=12 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -Werror=implicit-function-declaration --sysroot=/usr/share/emscripten/system -Xclang -isystem/usr/share/emscripten/cache/include -Xclang -iwithsysroot/include/libcxx -Xclang -iwithsysroot/lib/libcxxabi/include -Xclang -iwithsysroot/include/compat -Xclang -iwithsysroot/include/libc -Xclang -iwithsysroot/lib/libc/musl/arch/emscripten -Xclang -iwithsysroot/local/include -Xclang -iwithsysroot/include/SSE -Xclang -iwithsysroot/include/neon -Xclang -iwithsysroot/lib/compiler-rt/include -Xclang -iwithsysroot/lib/libunwind/include -Dcorrade_EXPORTS -I/app/lib/magnum-bindings/src -I/app/lib/magnum-bindings/src/python -I/app/lib/magnum-bindings/build/src/python -isystem /app/install_emscripten/include -isystem /usr/local/include/python3.11 -fPIC -fvisibility=hidden -Wall -Wextra -Wold-style-cast -Winit-self -Werror=return-type -Wmissing-declarations -Wpedantic -fvisibility=hidden -fvisibility-inlines-hidden -Wmissing-prototypes -Wno-shorten-64-to-32 -flto -c /app/lib/magnum-bindings/src/python/corrade/pluginmanager.cpp -o CMakeFiles/corrade.dir/pluginmanager.cpp.o' failed (1)
+[0m[91mmake[2]: *** [src/python/corrade/CMakeFiles/corrade.dir/build.make:108: src/python/corrade/CMakeFiles/corrade.dir/pluginmanager.cpp.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+[0m[ 42%] Building CXX object src/python/magnum/CMakeFiles/magnum.dir/math.vectorfloat.cpp.o
+[91mIn file included from /app/lib/magnum-bindings/src/python/magnum/math.vectorfloat.cpp:26:
+In file included from /app/lib/magnum-bindings/src/python/magnum/math.vector.h:28:
+In file included from /app/install_emscripten/include/pybind11/operators.h:12:
+In file included from /app/install_emscripten/include/pybind11/pybind11.h:13:
+In file included from /app/install_emscripten/include/pybind11/detail/class.h:12:
+In file included from /app/install_emscripten/include/pybind11/detail/../attr.h:13:
+In file included from /app/install_emscripten/include/pybind11/detail/common.h:266:
+In file included from /usr/local/include/python3.11/Python.h:38:
+/usr/local/include/python3.11/pyport.h:601:2: error: "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)."
+#error "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)."
+ ^
+[0m[91m1 error generated.
+[0m[91mem++: error: '/usr/bin/clang++ -DEMSCRIPTEN -fignore-exceptions -flto=full -Xclang -isystem/usr/share/emscripten/system/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=12 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -Werror=implicit-function-declaration --sysroot=/usr/share/emscripten/system -Xclang -isystem/usr/share/emscripten/cache/include -Xclang -iwithsysroot/include/libcxx -Xclang -iwithsysroot/lib/libcxxabi/include -Xclang -iwithsysroot/include/compat -Xclang -iwithsysroot/include/libc -Xclang -iwithsysroot/lib/libc/musl/arch/emscripten -Xclang -iwithsysroot/local/include -Xclang -iwithsysroot/include/SSE -Xclang -iwithsysroot/include/neon -Xclang -iwithsysroot/lib/compiler-rt/include -Xclang -iwithsysroot/lib/libunwind/include -Dmagnum_EXPORTS -I/app/lib/magnum-bindings/src -I/app/lib/magnum-bindings/src/python -I/app/lib/magnum-bindings/build/src/python -isystem /app/install_emscripten/include -isystem /usr/local/include/python3.11 -fPIC -fvisibility=hidden -Wall -Wextra -Wold-style-cast -Winit-self -Werror=return-type -Wmissing-declarations -Wpedantic -fvisibility=hidden -fvisibility-inlines-hidden -Wmissing-prototypes -Wno-shorten-64-to-32 -flto -c /app/lib/magnum-bindings/src/python/magnum/magnum.cpp -o CMakeFiles/magnum.dir/magnum.cpp.o' failed (1)
+[0m[91mmake[2]: *** [src/python/magnum/CMakeFiles/magnum.dir/build.make:82: src/python/magnum/CMakeFiles/magnum.dir/magnum.cpp.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+[0m[91m1 error generated.
+[0m[91mem++: error: '/usr/bin/clang++ -DEMSCRIPTEN -fignore-exceptions -flto=full -Xclang -isystem/usr/share/emscripten/system/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=12 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -Werror=implicit-function-declaration --sysroot=/usr/share/emscripten/system -Xclang -isystem/usr/share/emscripten/cache/include -Xclang -iwithsysroot/include/libcxx -Xclang -iwithsysroot/lib/libcxxabi/include -Xclang -iwithsysroot/include/compat -Xclang -iwithsysroot/include/libc -Xclang -iwithsysroot/lib/libc/musl/arch/emscripten -Xclang -iwithsysroot/local/include -Xclang -iwithsysroot/include/SSE -Xclang -iwithsysroot/include/neon -Xclang -iwithsysroot/lib/compiler-rt/include -Xclang -iwithsysroot/lib/libunwind/include -Dcorrade_EXPORTS -I/app/lib/magnum-bindings/src -I/app/lib/magnum-bindings/src/python -I/app/lib/magnum-bindings/build/src/python -isystem /app/install_emscripten/include -isystem /usr/local/include/python3.11 -fPIC -fvisibility=hidden -Wall -Wextra -Wold-style-cast -Winit-self -Werror=return-type -Wmissing-declarations -Wpedantic -fvisibility=hidden -fvisibility-inlines-hidden -Wmissing-prototypes -Wno-shorten-64-to-32 -flto -c /app/lib/magnum-bindings/src/python/corrade/corrade.cpp -o CMakeFiles/corrade.dir/corrade.cpp.o' failed (1)
+[0m[91mmake[2]: *** [src/python/corrade/CMakeFiles/corrade.dir/build.make:82: src/python/corrade/CMakeFiles/corrade.dir/corrade.cpp.o] Error 1
+[0m[91m1 error generated.
+[0m[91mem++: error: '/usr/bin/clang++ -DEMSCRIPTEN -fignore-exceptions -flto=full -Xclang -isystem/usr/share/emscripten/system/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=12 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -Werror=implicit-function-declaration --sysroot=/usr/share/emscripten/system -Xclang -isystem/usr/share/emscripten/cache/include -Xclang -iwithsysroot/include/libcxx -Xclang -iwithsysroot/lib/libcxxabi/include -Xclang -iwithsysroot/include/compat -Xclang -iwithsysroot/include/libc -Xclang -iwithsysroot/lib/libc/musl/arch/emscripten -Xclang -iwithsysroot/local/include -Xclang -iwithsysroot/include/SSE -Xclang -iwithsysroot/include/neon -Xclang -iwithsysroot/lib/compiler-rt/include -Xclang -iwithsysroot/lib/libunwind/include -Dcorrade_EXPORTS -I/app/lib/magnum-bindings/src -I/app/lib/magnum-bindings/src/python -I/app/lib/magnum-bindings/build/src/python -isystem /app/install_emscripten/include -isystem /usr/local/include/python3.11 -fPIC -fvisibility=hidden -Wall -Wextra -Wold-style-cast -Winit-self -Werror=return-type -Wmissing-declarations -Wpedantic -fvisibility=hidden -fvisibility-inlines-hidden -Wmissing-prototypes -Wno-shorten-64-to-32 -flto -c /app/lib/magnum-bindings/src/python/corrade/containers.cpp -o CMakeFiles/corrade.dir/containers.cpp.o' failed (1)
+[0m[91mmake[2]: *** [src/python/corrade/CMakeFiles/corrade.dir/build.make:95: src/python/corrade/CMakeFiles/corrade.dir/containers.cpp.o] Error 1
+[0m[91mmake[1]: *** [CMakeFiles/Makefile2:447: src/python/corrade/CMakeFiles/corrade.dir/all] Error 2
+make[1]: *** Waiting for unfinished jobs....
+[0m[91m1 error generated.
+[0m[91mem++: error: '/usr/bin/clang++ -DEMSCRIPTEN -fignore-exceptions -flto=full -Xclang -isystem/usr/share/emscripten/system/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=12 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -Werror=implicit-function-declaration --sysroot=/usr/share/emscripten/system -Xclang -isystem/usr/share/emscripten/cache/include -Xclang -iwithsysroot/include/libcxx -Xclang -iwithsysroot/lib/libcxxabi/include -Xclang -iwithsysroot/include/compat -Xclang -iwithsysroot/include/libc -Xclang -iwithsysroot/lib/libc/musl/arch/emscripten -Xclang -iwithsysroot/local/include -Xclang -iwithsysroot/include/SSE -Xclang -iwithsysroot/include/neon -Xclang -iwithsysroot/lib/compiler-rt/include -Xclang -iwithsysroot/lib/libunwind/include -Dmagnum_EXPORTS -I/app/lib/magnum-bindings/src -I/app/lib/magnum-bindings/src/python -I/app/lib/magnum-bindings/build/src/python -isystem /app/install_emscripten/include -isystem /usr/local/include/python3.11 -fPIC -fvisibility=hidden -Wall -Wextra -Wold-style-cast -Winit-self -Werror=return-type -Wmissing-declarations -Wpedantic -fvisibility=hidden -fvisibility-inlines-hidden -Wmissing-prototypes -Wno-shorten-64-to-32 -flto -c /app/lib/magnum-bindings/src/python/magnum/math.range.cpp -o CMakeFiles/magnum.dir/math.range.cpp.o' failed (1)
+[0m[91mmake[2]: *** [src/python/magnum/CMakeFiles/magnum.dir/build.make:134: src/python/magnum/CMakeFiles/magnum.dir/math.range.cpp.o] Error 1
+[0m[91m1 error generated.
+[0m[91mem++: error: '/usr/bin/clang++ -DEMSCRIPTEN -fignore-exceptions -flto=full -Xclang -isystem/usr/share/emscripten/system/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=12 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -Werror=implicit-function-declaration --sysroot=/usr/share/emscripten/system -Xclang -isystem/usr/share/emscripten/cache/include -Xclang -iwithsysroot/include/libcxx -Xclang -iwithsysroot/lib/libcxxabi/include -Xclang -iwithsysroot/include/compat -Xclang -iwithsysroot/include/libc -Xclang -iwithsysroot/lib/libc/musl/arch/emscripten -Xclang -iwithsysroot/local/include -Xclang -iwithsysroot/include/SSE -Xclang -iwithsysroot/include/neon -Xclang -iwithsysroot/lib/compiler-rt/include -Xclang -iwithsysroot/lib/libunwind/include -Dmagnum_EXPORTS -I/app/lib/magnum-bindings/src -I/app/lib/magnum-bindings/src/python -I/app/lib/magnum-bindings/build/src/python -isystem /app/install_emscripten/include -isystem /usr/local/include/python3.11 -fPIC -fvisibility=hidden -Wall -Wextra -Wold-style-cast -Winit-self -Werror=return-type -Wmissing-declarations -Wpedantic -fvisibility=hidden -fvisibility-inlines-hidden -Wmissing-prototypes -Wno-shorten-64-to-32 -flto -c /app/lib/magnum-bindings/src/python/magnum/math.cpp -o CMakeFiles/magnum.dir/math.cpp.o' failed (1)
+[0m[91mmake[2]: *** [src/python/magnum/CMakeFiles/magnum.dir/build.make:95: src/python/magnum/CMakeFiles/magnum.dir/math.cpp.o] Error 1
+[0m[91m1 error generated.
+[0m[91mem++: error: '/usr/bin/clang++ -DEMSCRIPTEN -fignore-exceptions -flto=full -Xclang -isystem/usr/share/emscripten/system/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=12 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -Werror=implicit-function-declaration --sysroot=/usr/share/emscripten/system -Xclang -isystem/usr/share/emscripten/cache/include -Xclang -iwithsysroot/include/libcxx -Xclang -iwithsysroot/lib/libcxxabi/include -Xclang -iwithsysroot/include/compat -Xclang -iwithsysroot/include/libc -Xclang -iwithsysroot/lib/libc/musl/arch/emscripten -Xclang -iwithsysroot/local/include -Xclang -iwithsysroot/include/SSE -Xclang -iwithsysroot/include/neon -Xclang -iwithsysroot/lib/compiler-rt/include -Xclang -iwithsysroot/lib/libunwind/include -Dmagnum_EXPORTS -I/app/lib/magnum-bindings/src -I/app/lib/magnum-bindings/src/python -I/app/lib/magnum-bindings/build/src/python -isystem /app/install_emscripten/include -isystem /usr/local/include/python3.11 -fPIC -fvisibility=hidden -Wall -Wextra -Wold-style-cast -Winit-self -Werror=return-type -Wmissing-declarations -Wpedantic -fvisibility=hidden -fvisibility-inlines-hidden -Wmissing-prototypes -Wno-shorten-64-to-32 -flto -c /app/lib/magnum-bindings/src/python/magnum/math.matrixfloat.cpp -o CMakeFiles/magnum.dir/math.matrixfloat.cpp.o' failed (1)
+[0m[91mmake[2]: *** [src/python/magnum/CMakeFiles/magnum.dir/build.make:108: src/python/magnum/CMakeFiles/magnum.dir/math.matrixfloat.cpp.o] Error 1
+[0m[91m1 error generated.
+[0m[91mem++: error: '/usr/bin/clang++ -DEMSCRIPTEN -fignore-exceptions -flto=full -Xclang -isystem/usr/share/emscripten/system/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=12 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -Werror=implicit-function-declaration --sysroot=/usr/share/emscripten/system -Xclang -isystem/usr/share/emscripten/cache/include -Xclang -iwithsysroot/include/libcxx -Xclang -iwithsysroot/lib/libcxxabi/include -Xclang -iwithsysroot/include/compat -Xclang -iwithsysroot/include/libc -Xclang -iwithsysroot/lib/libc/musl/arch/emscripten -Xclang -iwithsysroot/local/include -Xclang -iwithsysroot/include/SSE -Xclang -iwithsysroot/include/neon -Xclang -iwithsysroot/lib/compiler-rt/include -Xclang -iwithsysroot/lib/libunwind/include -Dmagnum_EXPORTS -I/app/lib/magnum-bindings/src -I/app/lib/magnum-bindings/src/python -I/app/lib/magnum-bindings/build/src/python -isystem /app/install_emscripten/include -isystem /usr/local/include/python3.11 -fPIC -fvisibility=hidden -Wall -Wextra -Wold-style-cast -Winit-self -Werror=return-type -Wmissing-declarations -Wpedantic -fvisibility=hidden -fvisibility-inlines-hidden -Wmissing-prototypes -Wno-shorten-64-to-32 -flto -c /app/lib/magnum-bindings/src/python/magnum/math.matrixdouble.cpp -o CMakeFiles/magnum.dir/math.matrixdouble.cpp.o' failed (1)
+[0m[91mmake[2]: *** [src/python/magnum/CMakeFiles/magnum.dir/build.make:121: src/python/magnum/CMakeFiles/magnum.dir/math.matrixdouble.cpp.o] Error 1
+[0m[91m1 error generated.
+[0m[91mem++: error: '/usr/bin/clang++ -DEMSCRIPTEN -fignore-exceptions -flto=full -Xclang -isystem/usr/share/emscripten/system/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=12 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -Werror=implicit-function-declaration --sysroot=/usr/share/emscripten/system -Xclang -isystem/usr/share/emscripten/cache/include -Xclang -iwithsysroot/include/libcxx -Xclang -iwithsysroot/lib/libcxxabi/include -Xclang -iwithsysroot/include/compat -Xclang -iwithsysroot/include/libc -Xclang -iwithsysroot/lib/libc/musl/arch/emscripten -Xclang -iwithsysroot/local/include -Xclang -iwithsysroot/include/SSE -Xclang -iwithsysroot/include/neon -Xclang -iwithsysroot/lib/compiler-rt/include -Xclang -iwithsysroot/lib/libunwind/include -Dmagnum_EXPORTS -I/app/lib/magnum-bindings/src -I/app/lib/magnum-bindings/src/python -I/app/lib/magnum-bindings/build/src/python -isystem /app/install_emscripten/include -isystem /usr/local/include/python3.11 -fPIC -fvisibility=hidden -Wall -Wextra -Wold-style-cast -Winit-self -Werror=return-type -Wmissing-declarations -Wpedantic -fvisibility=hidden -fvisibility-inlines-hidden -Wmissing-prototypes -Wno-shorten-64-to-32 -flto -c /app/lib/magnum-bindings/src/python/magnum/math.vectorfloat.cpp -o CMakeFiles/magnum.dir/math.vectorfloat.cpp.o' failed (1)
+[0m[91mmake[2]: *** [src/python/magnum/CMakeFiles/magnum.dir/build.make:147: src/python/magnum/CMakeFiles/magnum.dir/math.vectorfloat.cpp.o] Error 1
+[0m[91mmake[1]: *** [CMakeFiles/Makefile2:474: src/python/magnum/CMakeFiles/magnum.dir/all] Error 2
+[0m[91mmake: *** [Makefile:149: all] Error 2
+[0mRemoving intermediate container 3fa185c88470
+ ---> 88393dd6b299
+Step 39/39 : ENV PS2="videogame$ "
+ ---> Running in 9f716e44bd34
+Removing intermediate container 9f716e44bd34
+ ---> 6c725c8e0b16
+Successfully built 6c725c8e0b16
+Successfully tagged the-ultimate-videogame:build

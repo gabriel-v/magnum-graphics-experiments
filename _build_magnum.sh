@@ -3,14 +3,18 @@
 cd "$(dirname ${BASH_SOURCE[0]})"
 cd lib/magnum
 (
-mkdir build && cd build
+    rm -rf build
+    mkdir build && cd build
 	# -DMAGNUM_WITH_SDL2APPLICATION=ON \
     cmake .. \
 	-DMAGNUM_WITH_PYTHON=ON \
-	-DCMAKE_TOOLCHAIN_FILE="/app/lib/toolchains/generic/Emscripten-wasm.cmake" \
-	-DCMAKE_PREFIX_PATH="/usr/lib/emscripten/system" \
-	-DCMAKE_FIND_ROOT_PATH="/usr/lib/emscripten/system" \
-	-DCMAKE_INSTALL_PREFIX="/usr/lib/emscripten/system" \
+	-DMAGNUM_BUILD_STATIC=ON \
+	-DCMAKE_TOOLCHAIN_FILE="$VIDEOGAME_EMSCRIPTEN_TOOLCHAIN" \
+	-DCMAKE_PREFIX_PATH="$VIDEOGAME_INSTALL_LOCATION;/usr/local;/usr/share;/usr/lib" \
+	-DCMAKE_FIND_ROOT_PATH="$VIDEOGAME_INSTALL_LOCATION" \
+	-DCMAKE_INSTALL_PREFIX="$VIDEOGAME_INSTALL_LOCATION" \
+	# -DMAGNUM_WITH_EMSCRIPTENAPPLICATION=ON \
+	# -DMAGNUM_WITH_WINDOWLESSEGLAPPLICATION=ON \
 	# -DCMAKE_BUILD_TYPE=Release
 	# -DCMAKE_INSTALL_PREFIX=/usr \
 
