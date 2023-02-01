@@ -1,0 +1,12 @@
+[submodule "magnum-bindings"]
+	path = lib/magnum-bindings
+	url = https://github.com/mosra/magnum-bindings.git
+[submodule "lib/magnum"]
+	path = lib/magnum
+	url = https://github.com/mosra/magnum
+[submodule "lib/toolchains"]
+	path = lib/toolchains
+	url = https://github.com/mosra/toolchains
+[submodule "lib/corrade"]
+	path = lib/corrade
+	url = https://github.com/mosra/corrade
